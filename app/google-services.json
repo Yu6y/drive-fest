@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1088354233037",
+    "project_id": "moto-event",
+    "storage_bucket": "moto-event.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088354233037:android:01cdfedb310f3a285a1784",
+        "android_client_info": {
+          "package_name": "com.example.drivefest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_e9_797tg6Je14pw6zi7F_A68K25UNUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
