@@ -2,6 +2,7 @@ package com.example.drivefest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,29 +10,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.auth.User;
+import com.example.drivefest.viewmodel.LoginActivityViewModel;
 
-import java.util.regex.Pattern;
+import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
-    FirebaseAuth auth;
-
+    LoginActivityViewModel mLoginVM;
     private EditText email, password;
     private TextView txt;
     private Button loginbtn;
+    private String toastText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,11 +39,14 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-        auth = FirebaseAuth.getInstance();
         email = findViewById(R.id.loginmail);
         password = findViewById(R.id.loginpass);
         loginbtn = findViewById(R.id.loginbtn);
         txt = findViewById(R.id.signuptxt);
+        //mLoginVM = new LoginActivityViewModel();
+        mLoginVM = new ViewModelProvider(this).get(LoginActivityViewModel.class);
+
+
     }
 
     public void textSingUpActivityClick(View view){
@@ -59,37 +58,19 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, HomeActivity.class);
         String emailStr = email.getText().toString().trim();
         String passwordStr = password.getText().toString().trim();
+        intent.putExtra("user", emailStr);
 
-        if(!checkCredentials(emailStr, passwordStr))
-            Toast.makeText(this, "Provided e-mail or password are incorrect."
-                    , Toast.LENGTH_SHORT).show();
-        else{
-            intent.putExtra("user", emailStr);
-            auth.signInWithEmailAndPassword(emailStr, passwordStr).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                @Override
-                public void onSuccess(AuthResult authResult) {
-                    Toast.makeText(LoginActivity.this, "Success login.", Toast.LENGTH_SHORT).show();
+        Log.d("Przed", "test");
+
+
+        mLoginVM.signInUser(emailStr, passwordStr);
+        mLoginVM.getToastText().observe(this, new Observer<HashMap<Boolean, String>>() {
+            @Override
+            public void onChanged(HashMap<Boolean, String> response) {
+                Toast.makeText(LoginActivity.this, response.get(response.keySet().iterator().next()).toString(), Toast.LENGTH_SHORT).show();
+                if(response.keySet().iterator().next().toString() == "true")
                     startActivity(intent);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(LoginActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-    private boolean checkCredentials(String mail, String pass){
-        boolean mailCheck, passCheck;
-        mailCheck =  Pattern.compile("^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$")
-                .matcher(mail)
-                .matches();
-        if(pass == null || pass.isEmpty())
-            passCheck = false;
-        else
-            passCheck = true;
-
-        return mailCheck && passCheck;
+            }
+        });
     }
 }
