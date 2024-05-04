@@ -27,7 +27,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText email, password;
     private TextView txt;
     private Button loginbtn;
-    private String toastText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +70,8 @@ public class LoginActivity extends AppCompatActivity {
                 if(response.keySet().iterator().next().toString() == "true")
                     startActivity(intent);
             }
+
         });
+
     }
 }

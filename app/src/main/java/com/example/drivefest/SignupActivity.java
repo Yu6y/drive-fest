@@ -14,20 +14,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.drivefest.viewmodel.SignupActivityViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 public class SignupActivity extends AppCompatActivity {
 
-    FirebaseAuth auth;
     private EditText email, password;
     private TextView txt;
     private Button loginbtn;
+    private SignupActivityViewModel mSignupVM;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,57 +44,46 @@ public class SignupActivity extends AppCompatActivity {
             return insets;
         });
 
-        auth = FirebaseAuth.getInstance();
         email = findViewById(R.id.signmail);
         password = findViewById(R.id.signpass);
         loginbtn = findViewById(R.id.signbtn);
         txt = findViewById(R.id.logintxt);
+        mSignupVM = new ViewModelProvider(this).get(SignupActivityViewModel.class);
     }
 
-    public void signUpBtnClick(View view){
+    public void signUpBtnClick(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
-        String emailStr = email.getText().toString().trim();
+        String mailStr = email.getText().toString().trim();
         String passwordStr = password.getText().toString().trim();
 
-        if(checkMail(emailStr) && checkPass(passwordStr)){
-            auth.createUserWithEmailAndPassword(emailStr, passwordStr)
-                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                @Override
-                public void onSuccess(AuthResult authResult) {
-                    Toast.makeText(SignupActivity.this, "Success"
-                            , Toast.LENGTH_SHORT).show();
-                    startActivity(intent);
+        mSignupVM.signUpUser(mailStr, passwordStr);
+        mSignupVM.getToastText().observe(this, new Observer<HashMap<Integer, String>>() {
+            @Override
+            public void onChanged(HashMap<Integer, String> response) {
+                switch(response.keySet().iterator().next()){
+                    case 0:
+                        Toast.makeText(SignupActivity.this, response.get(1).toString(), Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                    case 1:
+                        Toast.makeText(SignupActivity.this, response.get(2).toString(), Toast.LENGTH_SHORT).show();
+                    case 2:
+                        email.setError("");
+                        break;
+                    case 3:
+                        password.setError("At least 5 letters");
+                        break;
+                    case 4:
+                        email.setError("");
+                        password.setError("At least 5 letters");
+                        break;
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(SignupActivity.this, e.getMessage().toString()
-                                    , Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            }
 
-        }else{
-            if(!checkMail(emailStr))
-                email.setError("Bad e-mail");
-            if(!checkPass(passwordStr))
-                email.setError("Bad password");
-        }
+        });
     }
 
-    public void textLogInActivityClick(View view){
+    public void textLogInActivityClick(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
-    }
-
-    private boolean checkMail(String mail){
-        return Pattern.compile("^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$")
-                .matcher(mail)
-                .matches();
-    }
-
-    private boolean checkPass(String pass){
-        if(pass == null || pass.isEmpty() || pass.length() < 6)
-            return false;
-        return true;
     }
 }

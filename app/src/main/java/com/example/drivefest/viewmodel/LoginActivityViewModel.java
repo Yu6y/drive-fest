@@ -25,22 +25,34 @@ public class LoginActivityViewModel extends ViewModel{
 
     public LoginActivityViewModel(){
         mAuth = FirebaseAuthRepository.getRepoInstance();
+        toastText = new MutableLiveData<>();
+        System.out.println("konstruktor");
     }
-    public void signInUser(String email, String password) {
-         toastText = mAuth.signInUser(email, password);
+    public MutableLiveData<HashMap<Boolean, String>> getToastText(){
+        //if(toastText == null)
+            //toastText = new MutableLiveData<>();
+        return toastText;
     }
 
-    public MutableLiveData<HashMap<Boolean, String>> getToastText(){
-        if(toastText == null)
-            toastText = new MutableLiveData<>();
-        return toastText;
+    public void signInUser(String mail, String password) {
+        if(checkCredentials(mail, password))
+            toastText = mAuth.signInUser(mail, password);
+        else
+            toastText.setValue(new HashMap<Boolean, String>(){
+                {
+                    put(false, "Given credentials are incorrect.");
+                }});
     }
 
     private boolean checkCredentials(String mail, String pass){
         boolean mailCheck, passCheck;
-        mailCheck =  Pattern.compile("^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$")
-                .matcher(mail)
-                .matches();
+        //mailCheck =  Pattern.compile("^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$")
+                //.matcher(mail)
+                //.matches();
+        if(mail == null || mail.isEmpty())
+            mailCheck = false;
+        else
+            mailCheck = true;
         if(pass == null || pass.isEmpty())
             passCheck = false;
         else
