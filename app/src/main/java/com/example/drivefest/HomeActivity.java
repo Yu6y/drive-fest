@@ -1,20 +1,24 @@
 package com.example.drivefest;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.drivefest.R;
+import com.example.drivefest.adapter.EventListAdapter;
+import com.example.drivefest.viewmodel.HomeViewModel;
 
 public class HomeActivity extends AppCompatActivity {
+    private HomeViewModel homeVM;
+    private EventListAdapter eventListAdapter;
+    private RecyclerView list;
 
-    TextView tv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +30,13 @@ public class HomeActivity extends AppCompatActivity {
             return insets;
         });
 
-        tv = findViewById(R.id.hometextview);
-        tv.setText("Welcome user with mail: " + getIntent().getStringExtra("user"));
+        homeVM = new ViewModelProvider(this).get(HomeViewModel.class);
+        homeVM.fetchEventShortList();
+
+        list = findViewById(R.id.event_list);
+        list.setHasFixedSize(true);
+        list.setLayoutManager(new GridLayoutManager(HomeActivity.this, 1));
+
+        eventListAdapter = new EventListAdapter(HomeActivity.this, homeVM.getEventShortList());
     }
 }
