@@ -1,6 +1,11 @@
 package com.example.drivefest.data.model;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class EventShort {
     private String id;
@@ -21,6 +26,17 @@ public class EventShort {
         this.followersCount = followersCount;
         this.eventId = eventId;
         this.tags = tags;
+    }
+
+    public EventShort(){
+        this.id = null;
+        this.name = null;
+        this.image = null;
+        this.date = null;
+        this.location = null;
+        this.followersCount = 0;
+        this.eventId = null;
+        this.tags = null;
     }
 
     public String getId() {
@@ -55,36 +71,14 @@ public class EventShort {
         return tags;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public void setFollowersCount(int followersCount) {
-        this.followersCount = followersCount;
-    }
-
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
-    }
-
-    public void setTags(String[] tags) {
-        this.tags = tags;
+    public void setData(Map<String, Object> document){
+        name = document.get("name").toString();
+        image = document.get("image").toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        date = LocalDate.parse(document.get("date").toString(), formatter);
+        location = document.get("location").toString();
+        followersCount = Integer.valueOf(document.get("followersCount").toString());
     }
 
 
