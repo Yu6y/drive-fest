@@ -1,14 +1,19 @@
 package com.example.drivefest.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 import com.example.drivefest.data.model.EventShort;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drivefest.R;
@@ -35,13 +40,18 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
         holder.eventTitle.setText(list.get(position).getName());
         holder.eventDate.setText(list.get(position).getDate().toString());
         holder.eventCity.setText(list.get(position).getLocation());
-        holder.eventFollowers.setText(list.get(position).getFollowersCount());
-        //zrobic repo do firestore
+        holder.eventFollowers.setText("Obserwujących: " + list.get(position).getFollowersCount());
+        Glide.with(context).load(list.get(position).getImage()).into(holder.eventPicture);
     }
 
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    public void updateData(List<EventShort> newList){
+        list = newList;
+        notifyDataSetChanged();
     }
 }
 

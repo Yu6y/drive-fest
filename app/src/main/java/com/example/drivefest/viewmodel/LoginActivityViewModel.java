@@ -1,22 +1,11 @@
 package com.example.drivefest.viewmodel;
 
-import static com.example.drivefest.data.repository.FirebaseAuthRepository.getRepoInstance;
-
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.drivefest.LoginActivity;
 import com.example.drivefest.data.repository.FirebaseAuthRepository;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.errorprone.annotations.MustBeClosed;
-import com.google.firebase.auth.AuthResult;
 
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 public class LoginActivityViewModel extends ViewModel{
 

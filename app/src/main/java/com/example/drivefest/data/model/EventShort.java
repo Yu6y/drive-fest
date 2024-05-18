@@ -10,7 +10,7 @@ import java.util.Map;
 public class EventShort {
     private String id;
     private String name;
-    private String image; // Uri?
+    private String image;
     private LocalDate date;
     private String location;
     private int followersCount;
@@ -82,5 +82,9 @@ public class EventShort {
     @Override
     public String toString(){
         return "name: " + name + "location: " + location;
+    }
+
+    public void setImage(String image){
+        this.image = image;
     }
 }

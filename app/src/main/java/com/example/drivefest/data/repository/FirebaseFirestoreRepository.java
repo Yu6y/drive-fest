@@ -1,7 +1,5 @@
 package com.example.drivefest.data.repository;
 
-import android.media.metrics.Event;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,7 +13,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -43,8 +40,10 @@ public class FirebaseFirestoreRepository {
                                     event.setData(document.getData());
                                     eventList.add(event);
                                     Log.d("success", document.getData().toString());
+                                    Log.d("count", String.valueOf(eventList.size()));
 
                                 }
+                                Log.d("coun2t", String.valueOf(eventList.size()));
                                 callback.OnSuccess(eventList);
                             } else {
                                 Log.d("fail", task.getException().toString());
