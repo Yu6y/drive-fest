@@ -70,8 +70,6 @@ public class EventShort {
     public String[] getTags() {
         return tags;
     }
-
-
     public void setData(Map<String, Object> document){
         name = document.get("name").toString();
         image = document.get("image").toString();
@@ -81,5 +79,8 @@ public class EventShort {
         followersCount = Integer.valueOf(document.get("followersCount").toString());
     }
 
-
+    @Override
+    public String toString(){
+        return "name: " + name + "location: " + location;
+    }
 }

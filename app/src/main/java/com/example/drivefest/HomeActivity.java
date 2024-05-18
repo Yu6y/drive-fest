@@ -1,6 +1,7 @@
 package com.example.drivefest;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +37,7 @@ public class HomeActivity extends AppCompatActivity {
         list = findViewById(R.id.event_list);
         list.setHasFixedSize(true);
         list.setLayoutManager(new GridLayoutManager(HomeActivity.this, 1));
-
         eventListAdapter = new EventListAdapter(HomeActivity.this, homeVM.getEventShortList());
+        list.setAdapter(eventListAdapter);
     }
 }

@@ -1,11 +1,13 @@
 package com.example.drivefest.data.repository;
 
 import android.media.metrics.Event;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.drivefest.data.model.EventShort;
+import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 
 public class FirebaseFirestoreRepository {
     private static final FirebaseFirestoreRepository instanceDB = new FirebaseFirestoreRepository();
@@ -27,28 +30,29 @@ public class FirebaseFirestoreRepository {
         return instanceDB;
     }
 
-    public HashMap<String, Object> getEventShort(){ // zwrocic dane
-        HashMap<String, Object> response = new HashMap<>();
-        mDatabase.collection("event_short")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            List<EventShort> eventList = new ArrayList<>();
-                            EventShort event = new EventShort();
-                            for(QueryDocumentSnapshot document : task.getResult()){
-                                Log.d("success", document.getData().toString());
-                                event.setData(document.getData());
-                                eventList.add(event);
+    public void getEventShort(DatabaseDataCallback callback){
+            mDatabase.collection("event_short")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                List<EventShort> eventList = new ArrayList<>();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    EventShort event = new EventShort();
+                                    event.setData(document.getData());
+                                    eventList.add(event);
+                                    Log.d("success", document.getData().toString());
+
+                                }
+                                callback.OnSuccess(eventList);
+                            } else {
+                                Log.d("fail", task.getException().toString());
+                                callback.OnFail(task.getException().getMessage());
                             }
+
                         }
-                        else{
-                            Log.d("fail", task.getException().toString());
-                            response.put("fail", task.getException().toString());
-                        }
-                    }
-                });
-        return response;
+                    });
     }
+
 }
