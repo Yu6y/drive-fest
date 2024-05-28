@@ -1,7 +1,6 @@
 package com.example.drivefest.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,20 +8,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.example.drivefest.data.model.EventShort;
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.drivefest.R;
+import com.example.drivefest.data.model.EventShort;
 
 import java.util.List;
 
 public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
     private Context context;
     private List<EventShort> list;
+    private EventClickListener eventClickListener;
 
     public EventListAdapter(Context context, List<EventShort> list) {
         this.context = context;
@@ -42,6 +41,13 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
         holder.eventCity.setText(list.get(position).getLocation());
         holder.eventFollowers.setText("Obserwujących: " + list.get(position).getFollowersCount());
         Glide.with(context).load(list.get(position).getImage()).into(holder.eventPicture);
+
+        holder.listElem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventClickListener.onClick(list.get(holder.getAdapterPosition()).getEventId());
+            }
+        });
     }
 
     @Override
@@ -56,6 +62,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
 }
 
 class EventListViewHolder extends RecyclerView.ViewHolder{
+    CardView listElem;
     TextView eventTitle, eventCity, eventDate, eventFollowers;
     ImageView eventPicture;
     Button eventFollow;
@@ -68,5 +75,6 @@ class EventListViewHolder extends RecyclerView.ViewHolder{
         eventFollowers = itemView.findViewById(R.id.event_followers);
         eventPicture = itemView.findViewById(R.id.event_image);
         eventFollow = itemView.findViewById(R.id.event_btn_follow);
+        listElem = itemView.findViewById(R.id.event_list_elem);
     }
 }

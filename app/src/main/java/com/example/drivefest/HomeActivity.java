@@ -1,5 +1,6 @@
 package com.example.drivefest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.drivefest.adapter.EventClickListener;
 import com.example.drivefest.adapter.EventListAdapter;
 import com.example.drivefest.data.model.EventShort;
 import com.example.drivefest.viewmodel.HomeViewModel;
@@ -57,4 +59,13 @@ public class HomeActivity extends AppCompatActivity {
 
 
     }
+
+    private EventClickListener eventClickListener = new EventClickListener() {
+        @Override
+        public void onClick(String id) {
+            Intent intent = new Intent(HomeActivity.this, EventDescActivity.class);
+            intent.putExtra("event_id", id);
+            startActivity(intent);
+        }
+    };
 }

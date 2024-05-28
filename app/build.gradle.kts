@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
@@ -45,6 +46,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation("com.github.bumptech.glide:glide:4.16.0")
+
 
 }
