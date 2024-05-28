@@ -77,6 +77,7 @@ public class EventShort {
         date = LocalDate.parse(document.get("date").toString(), formatter);
         location = document.get("location").toString();
         followersCount = Integer.valueOf(document.get("followersCount").toString());
+
     }
 
     @Override

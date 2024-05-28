@@ -23,9 +23,10 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
     private List<EventShort> list;
     private EventClickListener eventClickListener;
 
-    public EventListAdapter(Context context, List<EventShort> list) {
+    public EventListAdapter(Context context, List<EventShort> list, EventClickListener listener) {
         this.context = context;
         this.list = list;
+        eventClickListener = listener;
     }
 
     @NonNull
@@ -41,11 +42,11 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
         holder.eventCity.setText(list.get(position).getLocation());
         holder.eventFollowers.setText("Obserwujących: " + list.get(position).getFollowersCount());
         Glide.with(context).load(list.get(position).getImage()).into(holder.eventPicture);
-
+        int pos = position;
         holder.listElem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventClickListener.onClick(list.get(holder.getAdapterPosition()).getEventId());
+                eventClickListener.onClick(list.get(pos).getEventId());
             }
         });
     }

@@ -1,6 +1,8 @@
 package com.example.drivefest;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +22,10 @@ public class EventDescActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        TextView tv = findViewById(R.id.textView2);
+
+        tv.setText(getIntent().getStringExtra("event_id"));
+
     }
 }
