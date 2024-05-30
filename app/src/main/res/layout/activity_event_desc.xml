@@ -1,19 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/event_desc"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     tools:context=".EventDescActivity">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="vertical"
+        >
+        <ImageView
+            android:id="@+id/eventDesc_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
+        <TextView
+            android:id="@+id/eventDesc_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:scrollHorizontally="true"
+            android:textSize="25dp"
+            android:padding="7dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@android:color/darker_gray" />
+        <TextView
+            android:id="@+id/eventDesc_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:scrollHorizontally="true"
+            android:textSize="16dp"
+            android:padding="7dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+            <TextView
+                android:id="@+id/eventDesc_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_location"
+                android:text=""
+                android:padding="7dp"
+                android:drawablePadding="3dp"
+                android:textSize="16dp"
+
+                />
+            <TextView
+                android:id="@+id/eventDesc_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_date"
+                android:text=""
+                android:padding="7dp"
+                android:drawablePadding="3dp"
+                android:textSize="16dp"
+                />
+            <TextView
+                android:id="@+id/eventDesc_tags"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:scrollHorizontally="true"
+                android:textSize="16dp"
+                android:padding="7dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+            <Button
+                android:id="@+id/eventDesc_btn_follow"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="Obserwuj"
+                android:padding="2dp"
+                android:textSize="14dp"
+                android:layout_gravity="center"
+                />
+            <TextView
+                android:id="@+id/eventDesc_followers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Obserwujących: 30"
+                android:padding="4dp"
+                android:textSize="16dp"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
