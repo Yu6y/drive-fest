@@ -83,7 +83,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(String id) {
                 Intent intent = new Intent(HomeActivity.this, EventDescActivity.class);
-                intent.putExtra("event_id", id);
+                intent.putExtra("event_id", homeVM.getEventShortList().getValue().get(Integer.valueOf(id)));
                 startActivity(intent);
             }
         });
@@ -121,13 +121,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
     }
 
+    public void btnWyszukaj(View view){
+
+    }
+
     public void btnSortuj(View view){
 
     }
-    public void btnFiltruj(View view){
 
-    }
-    public void btnWyszukaj(View view){
+    public void btnFiltruj(View view){
 
     }
 }

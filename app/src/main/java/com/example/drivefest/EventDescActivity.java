@@ -1,7 +1,6 @@
 package com.example.drivefest;
 
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,13 +9,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.drivefest.data.model.Event;
+import com.example.drivefest.data.model.EventShort;
+import com.example.drivefest.viewmodel.EventDescViewModel;
+import com.example.drivefest.viewmodel.HomeViewModel;
 
 public class EventDescActivity extends AppCompatActivity {
 
-    private ImageView imageView;
-    private TextView title, description, city, date, followers, tags;
-    private Button followBtn;
-
+    private EventDescViewModel eventVM;
+    private TextView title, text, city, date, tags, followers;
+    private ImageView image;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,14 +32,36 @@ public class EventDescActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        eventVM = new ViewModelProvider(this).get(EventDescViewModel.class);
+        eventVM.setEvent(getIntent().getParcelableExtra("event_id"));
 
-        imageView = findViewById(R.id.eventDesc_image);
         title = findViewById(R.id.eventDesc_title);
-        description = findViewById(R.id.eventDesc_text);
+        text = findViewById(R.id.eventDesc_text);
         city = findViewById(R.id.eventDesc_city);
         date = findViewById(R.id.eventDesc_date);
-        followers = findViewById(R.id.eventDesc_followers);
         tags = findViewById(R.id.eventDesc_tags);
-        followBtn = findViewById(R.id.eventDesc_btn_follow);
+        followers = findViewById(R.id.eventDesc_followers);
+        image = findViewById(R.id.eventDesc_image);
+
+        eventVM.getEvent().observe(this, new Observer<Event>() {
+            @Override
+            public void onChanged(Event event) {
+                if (event != null) {
+                    // Wykonanie metody updateEventDesc() po uzyskaniu eventId
+                    eventVM.updateEventDesc();
+
+                    title.setText(event.getName());
+                    text.setText(event.getDescription());
+                    city.setText(event.getLocation());
+                    date.setText(event.getDate().toString());
+                    String tag = "";
+                    for(String s : event.getTags()){
+                        tag += '#' + s + ", ";
+                    }
+                    tags.setText(tag);
+                    followers.setText("Obserwujących: " + followers);
+                }
+            }
+        });
     }
 }

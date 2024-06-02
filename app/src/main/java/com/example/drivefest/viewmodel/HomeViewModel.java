@@ -1,9 +1,7 @@
 package com.example.drivefest.viewmodel;
 
-import android.media.metrics.Event;
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -14,8 +12,6 @@ import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.example.drivefest.data.repository.callback.StorageUrlCallback;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class HomeViewModel extends ViewModel {
@@ -23,7 +19,6 @@ public class HomeViewModel extends ViewModel {
     private FirebaseFirestoreRepository mDb;
     private FirebaseStorageRepository storage;
     private MutableLiveData<List<EventShort>> eventShortListLiveData;
-
     public HomeViewModel(){
         mDb = FirebaseFirestoreRepository.getDbInstance();
         storage = FirebaseStorageRepository.getStorageInstance();
