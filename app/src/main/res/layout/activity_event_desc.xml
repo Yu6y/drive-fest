@@ -45,10 +45,10 @@
                 android:padding="2dp"
                 android:textSize="14dp"
                 android:layout_gravity="center"
-                android:background="@drawable/button_pressed"
+                android:background="@drawable/custom_button"
                 android:drawablePadding="-20dp"
-                android:textColor="@color/white"
-                android:drawableEnd="@drawable/ic_favorite_white"
+                android:textColor="@color/black"
+                android:drawableEnd="@drawable/ic_favorite"
                 />
             <TextView
                 android:id="@+id/eventDesc_followers"
