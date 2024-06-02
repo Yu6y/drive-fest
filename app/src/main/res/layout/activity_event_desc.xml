@@ -31,50 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@android:color/darker_gray" />
-        <TextView
-            android:id="@+id/eventDesc_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:scrollHorizontally="true"
-            android:textSize="16dp"
-            android:padding="7dp" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_gravity="center">
-            <TextView
-                android:id="@+id/eventDesc_city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_location"
-                android:text=""
-                android:padding="7dp"
-                android:drawablePadding="3dp"
-                android:textSize="16dp"
-
-                />
-            <TextView
-                android:id="@+id/eventDesc_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_date"
-                android:text=""
-                android:padding="7dp"
-                android:drawablePadding="3dp"
-                android:textSize="16dp"
-                />
-            <TextView
-                android:id="@+id/eventDesc_tags"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:scrollHorizontally="true"
-                android:textSize="16dp"
-                android:padding="7dp" />
-        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,6 +45,10 @@
                 android:padding="2dp"
                 android:textSize="14dp"
                 android:layout_gravity="center"
+                android:background="@drawable/button_pressed"
+                android:drawablePadding="-20dp"
+                android:textColor="@color/white"
+                android:drawableEnd="@drawable/ic_favorite_white"
                 />
             <TextView
                 android:id="@+id/eventDesc_followers"
@@ -99,6 +59,52 @@
                 android:textSize="16dp"
                 android:layout_gravity="center"
                 />
+            <TextView
+            android:id="@+id/eventDesc_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_location"
+            android:text=""
+            android:padding="7dp"
+            android:drawablePadding="3dp"
+            android:textSize="16dp"
+
+            />
+            <TextView
+                android:id="@+id/eventDesc_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_date"
+                android:text=""
+                android:padding="7dp"
+                android:drawablePadding="3dp"
+                android:textSize="16dp"
+                />
         </LinearLayout>
+        <TextView
+            android:id="@+id/eventDesc_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:scrollHorizontally="true"
+            android:textSize="16dp"
+            android:padding="7dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/eventDesc_tags"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:scrollHorizontally="true"
+                android:textSize="16dp"
+                android:padding="7dp" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
