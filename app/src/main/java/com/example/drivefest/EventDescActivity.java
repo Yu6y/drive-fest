@@ -54,7 +54,7 @@ public class EventDescActivity extends AppCompatActivity {
             @Override
             public void onChanged(Event event) {
                 if (event != null) {
-                    // Wykonanie metody updateEventDesc() po uzyskaniu eventId
+
                     eventVM.updateEventDesc();
 
                     title.setText(event.getName());
@@ -66,7 +66,7 @@ public class EventDescActivity extends AppCompatActivity {
                         tag += '#' + s + ", ";
                     }
                     tags.setText(tag);
-                    followers.setText("Obserwujących: " + followers);
+                    followers.setText("Obserwujących: " + event.getFollowersCount());
                 }
             }
         });
