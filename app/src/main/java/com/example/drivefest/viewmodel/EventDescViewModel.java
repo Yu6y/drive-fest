@@ -1,10 +1,8 @@
 package com.example.drivefest.viewmodel;
 
 
-
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -29,18 +27,14 @@ public class EventDescViewModel extends ViewModel {
         Event event = new Event(eventShort);
         eventLiveData.postValue(event);
     }
-    public LiveData<Event> getEvent(){
+    public MutableLiveData<Event> getEvent(){
         return eventLiveData;
     }
 
-    private void updateEvent(Map<String, Object> map){
-        Event eventUpdated = eventLiveData.getValue();
-        eventUpdated.setDescription((String)map.get("description"));
-        eventUpdated.setLocationCords((String)map.get("location"));
-        eventLiveData.postValue(eventUpdated);
-    }
-    public void updateEventDesc(){
-        Event event = eventLiveData.getValue();
+    public void updateEventDesc(EventShort eventShort){
+        Event event = new Event(eventShort);
+        eventLiveData.postValue(event);
+        //Event event = eventLiveData.getValue();
         mDb.getEventDesc(event.getId(), new DatabaseDataCallback() {
             @Override
             public void OnSuccess(List<?> response) {
@@ -52,5 +46,12 @@ public class EventDescViewModel extends ViewModel {
                 Log.d("response", response);
             }
         });
+    }
+
+    private void updateEvent(Map<String, Object> map){
+        Event eventUpdated = eventLiveData.getValue();
+        eventUpdated.setDescription((String)map.get("description"));
+        eventUpdated.setLocationCords((String)map.get("location"));
+        eventLiveData.postValue(eventUpdated);
     }
 }

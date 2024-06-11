@@ -19,11 +19,14 @@ public class HomeViewModel extends ViewModel {
     private FirebaseFirestoreRepository mDb;
     private FirebaseStorageRepository storage;
     private MutableLiveData<List<EventShort>> eventShortListLiveData;
+    private List<EventShort> eventShortFiltered;
     public HomeViewModel(){
         mDb = FirebaseFirestoreRepository.getDbInstance();
         storage = FirebaseStorageRepository.getStorageInstance();
         eventShortListLiveData = new MutableLiveData<>();
+        eventShortFiltered = new ArrayList<>();
     }
+
 
     public void fetchEventShortList(){
         mDb.getEventShort(new DatabaseDataCallback() {
@@ -77,4 +80,19 @@ public class HomeViewModel extends ViewModel {
         return eventShortListLiveData;
     }
 
+    public void setFilteredList(String filter){
+        List<EventShort> filteredList = new ArrayList<>();
+        List<EventShort> currentList = eventShortListLiveData.getValue();
+        for(EventShort elem : currentList){
+            if(elem.getName().toLowerCase().contains(filter.toLowerCase())){
+                filteredList.add(elem);
+            }
+            Log.d("debugging list", String.valueOf(filteredList.size()));
+        }
+        eventShortFiltered = filteredList;
+    }
+
+    public List<EventShort> getFilteredList(){
+        return eventShortFiltered;
+    }
 }

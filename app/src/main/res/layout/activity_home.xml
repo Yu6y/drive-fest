@@ -26,6 +26,7 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <LinearLayout
+            android:id="@+id/btnLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -38,6 +39,7 @@
                 android:layout_gravity="center">
 
                 <Button
+                    android:id="@+id/buttonFiltruj"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Filrtuj"
@@ -54,6 +56,7 @@
                 android:layout_gravity="center">
 
                 <Button
+                    android:id="@+id/buttonSortuj"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Sortuj"
@@ -70,6 +73,7 @@
                 android:layout_gravity="center">
 
                 <Button
+                    android:id="@+id/buttonWyszukaj"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Wyszukaj"
@@ -77,8 +81,18 @@
                     android:onClick="btnWyszukaj"
                     android:background="@drawable/button_list_click" />
             </LinearLayout>
-
         </LinearLayout>
+
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_button"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:iconifiedByDefault="false"
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/event_list"

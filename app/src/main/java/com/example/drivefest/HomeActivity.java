@@ -2,9 +2,11 @@ package com.example.drivefest;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -21,15 +23,14 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.example.drivefest.viewmodel.HomeViewModel;
 import com.example.drivefest.adapter.EventClickListener;
 import com.example.drivefest.adapter.EventListAdapter;
 import com.example.drivefest.data.model.EventShort;
-import com.example.drivefest.viewmodel.HomeViewModel;
+
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -37,6 +38,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private EventListAdapter eventListAdapter;
     private RecyclerView list;
     private DrawerLayout drawerLayout;
+    private Button buttonFiltruj, buttonSortuj, buttonWyszukaj;
+    private LinearLayout linearLayout;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +99,28 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        buttonFiltruj = findViewById(R.id.buttonFiltruj);
+        buttonSortuj = findViewById(R.id.buttonSortuj);
+        buttonWyszukaj = findViewById(R.id.buttonWyszukaj);
+        linearLayout = findViewById(R.id.btnLayout);
+        searchView = findViewById(R.id.searchView);
 
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                linearLayout.setVisibility(View.VISIBLE);
+                searchView.setVisibility(View.GONE);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                homeVM.setFilteredList(newText);
+                eventListAdapter.updateData(homeVM.getFilteredList());
+                return true;
+            }
+        });
     }
 
     @Override
@@ -115,13 +140,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed(){
-        if(drawerLayout.isDrawerOpen(GravityCompat.START))
+        if (searchView.getVisibility() == View.VISIBLE) {
+            hideSearchView();
+        } else if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        else
+        } else {
             super.onBackPressed();
+        }
     }
 
+
     public void btnWyszukaj(View view){
+        linearLayout.setVisibility(View.GONE);
+        searchView.setVisibility(View.VISIBLE);
 
     }
 
@@ -130,6 +161,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void btnFiltruj(View view){
+        Intent intent = new Intent(HomeActivity.this, FilterActivity.class);
+        startActivity(intent);
+    }
 
+    private void hideSearchView() {
+        linearLayout.setVisibility(View.VISIBLE);
+        searchView.setVisibility(View.GONE);
     }
 }

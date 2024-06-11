@@ -3,6 +3,7 @@ package com.example.drivefest;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -31,25 +32,25 @@ public class EventDescActivity extends AppCompatActivity {
     private Context context;
     private Button btnFollow;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_event_desc);
-
-        // Toolbar setup
-        setSupportActionBar(findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.event_desc), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        setSupportActionBar(findViewById(R.id.toolbar_desc));
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         eventVM = new ViewModelProvider(this).get(EventDescViewModel.class);
-        eventVM.setEvent(getIntent().getParcelableExtra("event_id"));
+     //   eventVM.setEvent(getIntent().getParcelableExtra("event_id"));
 
         title = findViewById(R.id.eventDesc_title);
         text = findViewById(R.id.eventDesc_text);
@@ -60,14 +61,11 @@ public class EventDescActivity extends AppCompatActivity {
         image = findViewById(R.id.eventDesc_image);
         btnFollow = findViewById(R.id.eventDesc_btn_follow);
         context = this;
-
+        eventVM.updateEventDesc(getIntent().getParcelableExtra("event_id"));
         eventVM.getEvent().observe(this, new Observer<Event>() {
             @Override
             public void onChanged(Event event) {
                 if (event != null) {
-
-                    eventVM.updateEventDesc();
-
                     title.setText(event.getName());
                     text.setText(event.getDescription());
                     city.setText(event.getLocation());
@@ -86,6 +84,8 @@ public class EventDescActivity extends AppCompatActivity {
                             .placeholder(R.drawable.ic_cloud_download)
                             .error(R.drawable.ic_error)
                             .into(image);
+
+
                 }
             }
         });

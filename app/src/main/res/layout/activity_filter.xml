@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/filter_layout"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+
+    tools:context=".FilterActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Przedział czasowy"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+    <!-- TextView and EditText for "Od" -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Od"
+            android:textSize="18sp"
+            android:layout_gravity="center_vertical" />
+
+        <EditText
+            android:id="@+id/editTextDateOd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:hint="Wybierz datę"
+            android:focusable="false"
+            android:clickable="true"
+            android:background="@drawable/custom_button"
+            android:padding="10dp"
+            android:inputType="none" />
+    </LinearLayout>
+
+    <!-- TextView and EditText for "Do" -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Do"
+            android:textSize="18sp"
+            android:layout_gravity="center_vertical" />
+
+        <EditText
+            android:id="@+id/editTextDateDo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:hint="Wybierz datę"
+            android:background="@drawable/custom_button"
+            android:padding="10dp"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
+    </LinearLayout>
+
+    <!-- ExpandableListView -->
+    <ExpandableListView
+        android:id="@+id/expandableListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        />
+
+    <!-- Buttons for Clear and Accept -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:padding="2dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        >
+
+        <Button
+            android:id="@+id/buttonClear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_button"
+            android:text="Wyczyść"
+            android:layout_marginBottom="2dp"
+
+            />
+
+        <Button
+            android:id="@+id/buttonAccept"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:background="@drawable/button_pressed"
+            android:text="Akceptuj"
+            android:layout_marginTop="2dp"
+            android:onClick="onAcceptClick"
+            />
+    </LinearLayout>
+</LinearLayout>
