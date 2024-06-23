@@ -2,6 +2,7 @@ package com.example.drivefest.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,9 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.example.drivefest.R;
+import com.example.drivefest.data.ExpandableListDataItems;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,10 +26,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private HashMap<String, List<String>> detailsList;
     private Set<String> checkedItems;
 
-    public ExpandableListAdapter(Context context, List<String> titles, HashMap<String, List<String>> detailsList) {
+    public ExpandableListAdapter(Context context) {
         this.context = context;
-        this.titles = titles;
-        this.detailsList = detailsList;
+        this.detailsList = ExpandableListDataItems.getData();
+        this.titles = new ArrayList<>(detailsList.keySet());
         this.checkedItems = new HashSet<>();
     }
 
@@ -56,7 +59,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 checkedItems.remove(expandedListText);
             }
         });
-
         return convertView;
     }
 
@@ -110,5 +112,22 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     public Set<String> getCheckedItems() {
         return checkedItems;
+    }
+
+    public HashMap<String, List<String>> getCheckedBoxes(){
+        HashMap<String, List<String>> response = new HashMap<>();
+        for(String title: titles){
+            List<String> itemsList = new ArrayList<>();
+            for(String item: detailsList.get(title)){
+                if(checkedItems.contains(item))
+                    itemsList.add(item);
+            }
+            response.put(title, itemsList);
+        }
+        return response;
+    }
+
+    public void updateCheckedSet(Set<String> set){
+        checkedItems = set;
     }
 }

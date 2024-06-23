@@ -2,6 +2,7 @@ package com.example.drivefest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,9 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +34,9 @@ import com.example.drivefest.data.model.EventShort;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,7 +47,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Button buttonFiltruj, buttonSortuj, buttonWyszukaj;
     private LinearLayout linearLayout;
     private SearchView searchView;
+    private HashMap<String, List<String>> checkedItems;
+    String startDate, endDate;
 
+    private ActivityResultLauncher<Intent> filterActivityResultLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,11 +125,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                homeVM.setFilteredList(newText);
+                homeVM.setFilteredList(newText, null, null, null);
                 eventListAdapter.updateData(homeVM.getFilteredList());
                 return true;
             }
         });
+
+        filterActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        checkedItems = (HashMap<String, List<String>>) data.getSerializableExtra("checkedItems");
+                        startDate = data.getSerializableExtra("startDate").toString();
+                        endDate = data.getSerializableExtra("endDate").toString();
+
+                        homeVM.setFilteredList(null, startDate, endDate, checkedItems);
+                        eventListAdapter.updateData(homeVM.getFilteredList());
+                    }
+
+                }
+        );
     }
 
     @Override
@@ -162,7 +187,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public void btnFiltruj(View view){
         Intent intent = new Intent(HomeActivity.this, FilterActivity.class);
-        startActivity(intent);
+
+        if(startDate != null && endDate != null && checkedItems != null) {
+            Log.e("deeebuug", "csa");
+            intent.putExtra("checkedItems", (Serializable) checkedItems);
+            intent.putExtra("startDate", (Serializable) startDate);
+            intent.putExtra("endDate", (Serializable) endDate);
+        }
+        filterActivityResultLauncher.launch(intent);
     }
 
     private void hideSearchView() {

@@ -13,8 +13,8 @@ public class Event extends EventShort{
     }
 
     public Event(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags,
-                 String description, String place){
-        super(id, name, image, date, location, followersCount, tags);
+                 String voivodeship, String description, String place){
+        super(id, name, image, date, location, followersCount, tags, voivodeship);
         this.description = description;
         this.locationCords = place;
     }
@@ -25,10 +25,9 @@ public class Event extends EventShort{
                 eventShort.getDate(),
                 eventShort.getLocation(),
                 eventShort.getFollowersCount(),
-                eventShort.getTags());
+                eventShort.getTags(),
+                eventShort.getVoivodeship());
     }
-
-
 
     public void setData(Map<String, Object> document){
         description = document.get("description").toString();

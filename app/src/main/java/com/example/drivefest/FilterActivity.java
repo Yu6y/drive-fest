@@ -1,10 +1,13 @@
 package com.example.drivefest;
 
+import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,10 +16,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.drivefest.adapter.ExpandableListAdapter;
-import com.example.drivefest.data.ExpandableListDataItems;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,8 +33,9 @@ public class FilterActivity extends AppCompatActivity {
     ExpandableListAdapter expandableListAdapter;
     List<String> expandableTitleList;
     HashMap<String, List<String>> expandableDetailList;
-
-    HashMap<String, List<String>> filterListElems; // to do adaptera
+    EditText startDateEditText;
+    EditText endDateEditText;
+    HashMap <String, List<String>> checkedBoxes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,30 +49,34 @@ public class FilterActivity extends AppCompatActivity {
         });
 
         expandableListView = findViewById(R.id.expandableListView);
-        expandableDetailList = ExpandableListDataItems.getData();
-        expandableTitleList = new ArrayList<>(expandableDetailList.keySet());
-        expandableListAdapter = new ExpandableListAdapter(this, expandableTitleList, expandableDetailList);
-        filterListElems = new HashMap<>();
-        filterListElems.put(expandableTitleList.get(0), new ArrayList<>());
-        filterListElems.put(expandableTitleList.get(1), new ArrayList<>());
+        expandableListAdapter = new ExpandableListAdapter(this);//usunac stad listy, przekzywac context
         expandableListView.setAdapter(expandableListAdapter);
 
-        expandableListView.setOnGroupExpandListener(groupPosition ->
-                Toast.makeText(getApplicationContext(), expandableTitleList.get(groupPosition) + " List Expanded.", Toast.LENGTH_SHORT).show());
+        startDateEditText = findViewById(R.id.editTextDateOd);
+        endDateEditText = findViewById(R.id.editTextDateDo);
 
-        expandableListView.setOnGroupCollapseListener(groupPosition ->
-                Toast.makeText(getApplicationContext(), expandableTitleList.get(groupPosition) + " List Collapsed.", Toast.LENGTH_SHORT).show());
+        Intent intent = getIntent();
+        if(intent.hasExtra("checkedItems") && intent.hasExtra("startDate")
+        && intent.hasExtra("endDate")){
 
-       /* expandableListView.setOnChildClickListener((parent, v, groupPosition, childPosition, id) -> {
-            Toast.makeText(getApplicationContext(), expandableTitleList.get(groupPosition)
-                    + " -> "
-                    + expandableDetailList.get(
-                    expandableTitleList.get(groupPosition)).get(
-                    childPosition), Toast.LENGTH_SHORT
-            ).show();
+            String startDate = String.valueOf(intent.getSerializableExtra("startDate"));
+            String endDate = String.valueOf(intent.getSerializableExtra("endDate"));
+            Log.e("debug date", startDate);
+            if(!startDate.isEmpty())
+                startDateEditText.setText(startDate);
+            if(!endDate.isEmpty())
+                endDateEditText.setText(endDate);
+            checkedBoxes = (HashMap<String, List<String>>) intent.getSerializableExtra("checkedItems");
+            Set<String> checkBoxesItems = new HashSet<>();
+            for(String key: checkedBoxes.keySet()){
+                for(String elem: checkedBoxes.get(key)){
+                    checkBoxesItems.add(elem);
+                }
+            }
 
-            return false;
-        });*/
+            expandableListAdapter.updateCheckedSet(checkBoxesItems);
+            expandableListAdapter.notifyDataSetChanged();
+        }
 
         synchronizeCheckboxStates();
     }
@@ -84,7 +96,74 @@ public class FilterActivity extends AppCompatActivity {
         });
     }
 
-    public void onAcceptClick(View view){
-        //sprawddzic zaznaczenie checkoboxw, sciagnac daty i przekazac do home
+    @Override
+    public void onBackPressed() {
+        /*Intent resultIntent = new Intent();
+        resultIntent.putExtra("checkedItems", (Serializable) getCheckedItems());
+        setResult(RESULT_OK, resultIntent);*/
+        super.onBackPressed();
+    }
+
+    public void onAcceptClick(View view) {
+        String startDate = String.valueOf(startDateEditText.getText());
+        String endDate = String.valueOf(endDateEditText.getText());
+        if(dateCheck(startDate, endDate)) {
+            Intent resultIntent = new Intent();
+                resultIntent.putExtra("startDate", (Serializable) startDate);
+                resultIntent.putExtra("endDate", (Serializable) endDate);
+
+            resultIntent.putExtra("checkedItems", (Serializable) expandableListAdapter.getCheckedBoxes());
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        }
+    }
+
+    public void pickStartDate(View view){
+        pickDate(startDateEditText);
+    }
+    public void pickEndDate(View view){
+        pickDate(endDateEditText);
+    }
+
+    public void pickDate(EditText editText){
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePicker = new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        Calendar selectedDate = Calendar.getInstance();
+                        selectedDate.set(year, month, dayOfMonth);
+                        String date = new SimpleDateFormat("yyyy-MM-dd").format(selectedDate.getTime());
+
+                        editText.setText(date);
+                    }
+                }, year, month, day);
+
+        datePicker.show();
+    }
+
+    public boolean dateCheck(String dateStart, String dateEnd){
+        if(!dateStart.isEmpty() && !dateEnd.isEmpty()) {
+            LocalDate start = LocalDate.parse(dateStart);
+            LocalDate end = LocalDate.parse(dateEnd);
+
+            if (start.isAfter(end)) {
+                startDateEditText.setError("Bad date");
+                endDateEditText.setError("Bad date");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void clearClick(View view){
+        startDateEditText.getText().clear();
+        endDateEditText.getText().clear();
+        expandableListAdapter.updateCheckedSet(new HashSet<>());
+        expandableListAdapter.notifyDataSetChanged();
     }
 }

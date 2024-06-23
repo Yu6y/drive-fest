@@ -11,7 +11,9 @@ import com.example.drivefest.data.repository.FirebaseStorageRepository;
 import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.example.drivefest.data.repository.callback.StorageUrlCallback;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class HomeViewModel extends ViewModel {
@@ -80,14 +82,41 @@ public class HomeViewModel extends ViewModel {
         return eventShortListLiveData;
     }
 
-    public void setFilteredList(String filter){
+    public void setFilteredList(String filter, String startDate, String endDate, HashMap<String, List<String>> voivTags){
         List<EventShort> filteredList = new ArrayList<>();
         List<EventShort> currentList = eventShortListLiveData.getValue();
-        for(EventShort elem : currentList){
-            if(elem.getName().toLowerCase().contains(filter.toLowerCase())){
-                filteredList.add(elem);
+        if(startDate == null && endDate == null && voivTags == null) {
+            for (EventShort elem : currentList) {
+                if (elem.getName().toLowerCase().contains(filter.toLowerCase())) {
+                    filteredList.add(elem);
+                }
+                Log.d("debugging list", String.valueOf(filteredList.size()));
             }
-            Log.d("debugging list", String.valueOf(filteredList.size()));
+        }
+        else{
+            LocalDate fromDate;
+            LocalDate toDate;
+
+            if(startDate.isEmpty())
+                fromDate = LocalDate.parse("1900-01-01");
+            else
+                fromDate = LocalDate.parse(startDate);
+            if(endDate.isEmpty())
+                toDate = LocalDate.parse("3000-12-30");
+            else
+                toDate = LocalDate.parse(endDate);
+
+            for(EventShort elem: currentList){
+                if(elem.getDate().isAfter(fromDate.minusDays(1)) && elem.getDate().isBefore(toDate.plusDays(1))
+                    && (voivTags.get("Województwo").contains(elem.getVoivodeship()) || voivTags.get("Województwo").isEmpty())
+                ){
+                    for(String tag: elem.getTags())
+                        if(voivTags.get("Tagi").contains(tag) || voivTags.get("Tagi").isEmpty()) {
+                            filteredList.add(elem);
+                            break;
+                        }
+                }
+            }
         }
         eventShortFiltered = filteredList;
     }

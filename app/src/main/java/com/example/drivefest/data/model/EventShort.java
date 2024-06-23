@@ -24,8 +24,9 @@ public class EventShort implements Parcelable {
     private String location;
     private int followersCount;
     private String[] tags;
+    private String voivodeship;
 
-    public EventShort(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags) {
+    public EventShort(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags, String voivodeship) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -33,6 +34,7 @@ public class EventShort implements Parcelable {
         this.location = location;
         this.followersCount = followersCount;
         this.tags = tags;
+        this.voivodeship = voivodeship;
     }
 
     public EventShort(){
@@ -43,6 +45,7 @@ public class EventShort implements Parcelable {
         this.location = null;
         this.followersCount = 0;
         this.tags = null;
+        this.voivodeship = null;
     }
 
     public String getId() {
@@ -73,6 +76,9 @@ public class EventShort implements Parcelable {
     public String[] getTags() {
         return tags;
     }
+    public String getVoivodeship(){
+        return voivodeship;
+    }
     public void setData(Map<String, Object> document, String id){
         this.id = id;
         name = document.get("name").toString();
@@ -83,6 +89,7 @@ public class EventShort implements Parcelable {
         followersCount = Integer.valueOf(document.get("followersCount").toString());
         List<String> tagsList = (List<String>) document.get("tags");
         tags = tagsList.toArray(new String[0]);
+        voivodeship = document.get("voivodeship").toString();
     }
 
     @Override
@@ -109,6 +116,7 @@ public class EventShort implements Parcelable {
         dest.writeString(location);
         dest.writeInt(followersCount);
         dest.writeStringArray(tags);
+        dest.writeString(voivodeship);
     }
 
     protected EventShort(Parcel in){
@@ -119,6 +127,7 @@ public class EventShort implements Parcelable {
         location = in.readString();
         followersCount = in.readInt();
         tags = in.createStringArray();
+        voivodeship = in.readString();
     }
 
     public static final Creator<EventShort> CREATOR = new Creator<EventShort>() {
