@@ -6,14 +6,25 @@
         android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_home"
-            android:title="home"/>
+            android:id="@+id/nav_events"
+            android:title="Wydarzenia"
+            android:icon="@drawable/ic_event"
+            />
         <item
-            android:id="@+id/nav_gallery"
-            android:title="gallery"/>
+            android:id="@+id/nav_followed"
+            android:title="Zaobserwowane"
+            android:icon="@drawable/ic_favorite"
+            />
         <item
-            android:id="@+id/nav_cos"
-            android:title="cos"/>
+            android:id="@+id/nav_workshop"
+            android:title="Warsztaty"
+            android:icon="@drawable/ic_workshop"
+            />
+        <item
+            android:id="@+id/nav_user"
+            android:title="Użytkownik"
+            android:icon="@drawable/ic_person"
+            />
     </group>
 
 </menu>

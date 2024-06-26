@@ -44,13 +44,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private EventListAdapter eventListAdapter;
     private RecyclerView list;
     private DrawerLayout drawerLayout;
-    private Button buttonFiltruj, buttonSortuj, buttonWyszukaj;
     private LinearLayout linearLayout;
     private SearchView searchView;
     private HashMap<String, List<String>> checkedItems;
-    String startDate, endDate;
-
+    private String startDate, endDate, sortBy;
     private ActivityResultLauncher<Intent> filterActivityResultLauncher;
+    private ActivityResultLauncher<Intent> sortActivityResultLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,9 +107,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        buttonFiltruj = findViewById(R.id.buttonFiltruj);
-        buttonSortuj = findViewById(R.id.buttonSortuj);
-        buttonWyszukaj = findViewById(R.id.buttonWyszukaj);
         linearLayout = findViewById(R.id.btnLayout);
         searchView = findViewById(R.id.searchView);
 
@@ -125,6 +121,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                list.scrollToPosition(0);
                 homeVM.setFilteredList(newText, null, null, null);
                 eventListAdapter.updateData(homeVM.getFilteredList());
                 return true;
@@ -142,23 +139,49 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                         homeVM.setFilteredList(null, startDate, endDate, checkedItems);
                         eventListAdapter.updateData(homeVM.getFilteredList());
+                        list.scrollToPosition(0);
                     }
 
+                }
+        );
+        sortActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+
+                        sortBy = data.getSerializableExtra("sort").toString();
+                        eventListAdapter.updateSortCriteria(sortBy);
+                        if(sortBy.equals("xdefault")) {
+                            if (homeVM.getFilteredList().isEmpty()) {
+                                Log.d("debug list orig", homeVM.getEventShortList().getValue().get(1).getName());
+                                eventListAdapter.updateData(homeVM.getEventShortList().getValue());
+                            }
+                            else {
+                                Log.d("debug list", homeVM.getFilteredList().get(1).getName());
+                                eventListAdapter.updateData(homeVM.getFilteredList());
+                            }
+                        }
+                        list.scrollToPosition(0);
+                    }
                 }
         );
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        if(menuItem.getItemId() == R.id.nav_home)
+        /*if(menuItem.getItemId() == R.id.nav_events)
             //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
-            Toast.makeText(HomeActivity.this, "cos", Toast.LENGTH_SHORT).show();
-        else if(R.id.nav_gallery == menuItem.getItemId())
-            //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new GalleryFragment()).commit();
-            Toast.makeText(HomeActivity.this, "cos1", Toast.LENGTH_SHORT).show();
-        else if(R.id.nav_cos == menuItem.getItemId())
+            onBackPressed();*/
+        if(R.id.nav_followed == menuItem.getItemId()) {
+
+        }
+        else if(R.id.nav_workshop == menuItem.getItemId()) {
             //getSupportFragmentManager().beginTransaction().replace(R.id.fragmet_container, new CosFragment()).commit();
-            Toast.makeText(HomeActivity.this, "cos2", Toast.LENGTH_SHORT).show();
+        }
+        else if(R.id.nav_workshop == menuItem.getItemId()) {
+            //getSupportFragmentManager().beginTransaction().replace(R.id.fragmet_container, new CosFragment()).commit();
+        }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -178,10 +201,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public void btnWyszukaj(View view){
         linearLayout.setVisibility(View.GONE);
         searchView.setVisibility(View.VISIBLE);
-
     }
 
     public void btnSortuj(View view){
+        Intent intent = new Intent(HomeActivity.this, SortActivity.class);
+
+        if(sortBy != null){
+            intent.putExtra("sort", sortBy);
+        }
+        sortActivityResultLauncher.launch(intent);
 
     }
 

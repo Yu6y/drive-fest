@@ -26,17 +26,20 @@ import com.bumptech.glide.request.target.Target;
 import com.example.drivefest.R;
 import com.example.drivefest.data.model.EventShort;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
     private Context context;
     private List<EventShort> list;
     private EventClickListener eventClickListener;
+    private String sortBy;
 
     public EventListAdapter(Context context, List<EventShort> list, EventClickListener listener) {
         this.context = context;
         this.list = list;
         eventClickListener = listener;
+        sortBy = "xdefault";
     }
 
     @NonNull
@@ -93,9 +96,35 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
     }
 
     public void updateData(List<EventShort> newList){
-        list = newList;
+        list.clear();
+        list.addAll(newList);
+        sortList(list);
         notifyDataSetChanged();
     }
+
+    public void sortList(List<EventShort> list){
+        if(sortBy.equals("xdefault"))
+            return;
+
+        String sortParam = sortBy.substring(3);//namedatefollowcity
+        String sortOrder = sortBy.substring(0, 3);
+        if(sortParam.equals("name")){
+            if(sortOrder.equals("asc")) {
+                Comparator comparator = Comparator.comparing(EventShort::getName);
+                list.sort(comparator);
+                //dokonczyc, ogarnac zeby pofiltorwana lista tez mogla byc posortowana
+            }
+            else
+                list.sort(Comparator.comparing(EventShort::getName).reversed());
+        }
+    }
+
+    public void updateSortCriteria(String sortBy){
+        this.sortBy = sortBy;
+        sortList(list);
+        notifyDataSetChanged();
+    }
+
 }
 
 class EventListViewHolder extends RecyclerView.ViewHolder{

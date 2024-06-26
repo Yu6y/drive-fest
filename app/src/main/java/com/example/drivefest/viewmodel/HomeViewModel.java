@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.drivefest.data.model.Event;
 import com.example.drivefest.data.model.EventShort;
 import com.example.drivefest.data.repository.FirebaseFirestoreRepository;
 import com.example.drivefest.data.repository.FirebaseStorageRepository;
@@ -13,6 +14,8 @@ import com.example.drivefest.data.repository.callback.StorageUrlCallback;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class HomeViewModel extends ViewModel {
         storage = FirebaseStorageRepository.getStorageInstance();
         eventShortListLiveData = new MutableLiveData<>();
         eventShortFiltered = new ArrayList<>();
+
     }
 
 
@@ -124,4 +128,6 @@ public class HomeViewModel extends ViewModel {
     public List<EventShort> getFilteredList(){
         return eventShortFiltered;
     }
+
+
 }

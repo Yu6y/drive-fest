@@ -27,7 +27,7 @@
             android:layout_gravity="center_vertical" />
 
     </LinearLayout>
-    <!-- TextView and EditText for "Od" -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,7 +60,6 @@
             />
     </LinearLayout>
 
-    <!-- TextView and EditText for "Do" -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -92,7 +91,6 @@
             />
     </LinearLayout>
 
-    <!-- ExpandableListView -->
     <ExpandableListView
         android:id="@+id/expandableListView"
         android:layout_width="match_parent"
@@ -104,7 +102,7 @@
         android:layout_marginEnd="3dp"
         />
 
-    <!-- Buttons for Clear and Accept -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
