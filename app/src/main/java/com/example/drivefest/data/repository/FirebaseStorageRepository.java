@@ -51,5 +51,21 @@ public class FirebaseStorageRepository {
             }
         });
     }
+    public void getWorkshopPhotoUrl(StorageUrlCallback callback, String name){
+        storageRef = storageRef.getRoot();
+        storageRef = storageRef.child("images/workshops/" + name);
+        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                callback.onUrlReceived(uri.toString());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                callback.onUrlReceived("");
+            }
+        });
+    }
+
 }
 

@@ -5,50 +5,41 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
-import java.sql.Array;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-public class EventShort implements Parcelable {
+public class Workshop implements Parcelable{
     private String id;
     private String name;
     private String image;
-    private LocalDate date;
     private String location;
-    private int followersCount;
+    private float rating;
     private String[] tags;
     private String voivodeship;
-    private boolean isFollowed;
+    private boolean rated;
 
-    public EventShort(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags, String voivodeship) {
+    public Workshop(String id, String name, String image, String location, float rating, String[] tags, String voivodeship) {
         this.id = id;
         this.name = name;
         this.image = image;
-        this.date = date;
         this.location = location;
-        this.followersCount = followersCount;
+        this.rating = rating;
         this.tags = tags;
         this.voivodeship = voivodeship;
-        this.isFollowed = false;
     }
-
-    public EventShort(){
+    public Workshop(){
         this.id = null;
         this.name = null;
         this.image = null;
-        this.date = null;
         this.location = null;
-        this.followersCount = 0;
+        this.rating = 0;
         this.tags = null;
         this.voivodeship = null;
-        this.isFollowed = false;
+        this.rated = false;
+    }
+
+    public void setRated(boolean rated) {
+        this.rated = rated;
     }
 
     public String getId() {
@@ -63,38 +54,31 @@ public class EventShort implements Parcelable {
         return image;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
     public String getLocation() {
         return location;
     }
 
-    public int getFollowersCount() {
-        return followersCount;
+    public float getRating() {
+        return rating;
     }
 
     public String[] getTags() {
         return tags;
     }
 
-    public String getVoivodeship(){
+    public String getVoivodeship() {
         return voivodeship;
     }
 
-    public boolean getIsFollowed(){
-        return isFollowed;
+    public boolean isRated() {
+        return rated;
     }
-
     public void setData(Map<String, Object> document, String id){
         this.id = id;
         name = document.get("name").toString();
         image = document.get("image").toString();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        date = LocalDate.parse(document.get("date").toString(), formatter);
         location = document.get("location").toString();
-        followersCount = Integer.valueOf(document.get("followersCount").toString());
+        rating = Float.valueOf(document.get("rating").toString());
         List<String> tagsList = (List<String>) document.get("tags");
         tags = tagsList.toArray(new String[0]);
         voivodeship = document.get("voivodeship").toString();
@@ -120,36 +104,34 @@ public class EventShort implements Parcelable {
         dest.writeString(id);
         dest.writeString(name);
         dest.writeString(image);
-        dest.writeSerializable(date);
         dest.writeString(location);
-        dest.writeInt(followersCount);
+        dest.writeFloat(rating);
         dest.writeStringArray(tags);
         dest.writeString(voivodeship);
     }
 
-    protected EventShort(Parcel in){
+    protected Workshop(Parcel in){
         id = in.readString();
         name = in.readString();
         image = in.readString();
-        date = (LocalDate) in.readSerializable();
         location = in.readString();
-        followersCount = in.readInt();
+        rating = in.readFloat();
         tags = in.createStringArray();
         voivodeship = in.readString();
     }
 
-    public static final Creator<EventShort> CREATOR = new Creator<EventShort>() {
+    public static final Parcelable.Creator<Workshop> CREATOR = new Parcelable.Creator<Workshop>() {
         @Override
-        public EventShort createFromParcel(Parcel in) {
-            return new EventShort(in);
+        public Workshop createFromParcel(Parcel in) {
+            return new Workshop(in);
         }
         @Override
-        public EventShort[] newArray(int size) {
-            return new EventShort[size];
+        public Workshop[] newArray(int size) {
+            return new Workshop[size];
         }
     };
 
-    public void setFollowed(){
-        isFollowed = true;
+    public void setRating(){
+        rated = true;
     }
 }

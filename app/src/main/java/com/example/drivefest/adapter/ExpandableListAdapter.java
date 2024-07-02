@@ -26,9 +26,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private HashMap<String, List<String>> detailsList;
     private Set<String> checkedItems;
 
-    public ExpandableListAdapter(Context context) {
+    public ExpandableListAdapter(Context context, HashMap<String, List<String>> data) {
         this.context = context;
-        this.detailsList = ExpandableListDataItems.getData();
+        this.detailsList = data;
         this.titles = new ArrayList<>(detailsList.keySet());
         this.checkedItems = new HashSet<>();
     }

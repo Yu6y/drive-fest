@@ -12,33 +12,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.example.drivefest.R;
 import com.example.drivefest.data.model.EventShort;
 
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
     private Context context;
     private List<EventShort> list;
-    private EventClickListener eventClickListener;
+    private ClickListener clickListener;
     private String sortBy;
 
-    public EventListAdapter(Context context, List<EventShort> list, EventClickListener listener) {
+    public EventListAdapter(Context context, List<EventShort> list, ClickListener listener) {
         this.context = context;
         this.list = list;
-        eventClickListener = listener;
+        clickListener = listener;
         sortBy = "xdefault";
     }
 
@@ -61,33 +58,30 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
                 .placeholder(R.drawable.ic_cloud_download)
                 .error(R.drawable.ic_error)
                 .into(holder.eventPicture);
+        if(list.get(position).getIsFollowed()) {
+            Log.e("adapter", "przycosl");
+            setBtnUnFollowed(holder);
+        }
 
         int pos = position;
         holder.listElem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventClickListener.onClick(list.get(pos).getId());
+                clickListener.onClick(list.get(pos).getId());
             }
         });
         holder.eventFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(holder.eventFollow.getText().equals("Obserwuj")) {
-                    holder.eventFollow.setText("Obserwujesz");
-                    Drawable newIcon = ContextCompat.getDrawable(context, R.drawable.ic_favorite_white);
-                    holder.eventFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-                    holder.eventFollow.setBackgroundResource(R.drawable.button_pressed);
-                    holder.eventFollow.setTextColor(ContextCompat.getColor(context, R.color.white));
+                   setBtnFollowed(holder);
                 }
                 else if(holder.eventFollow.getText().equals("Obserwujesz")){
-                    holder.eventFollow.setText("Obserwuj");
-                    Drawable newIcon = ContextCompat.getDrawable(context, R.drawable.ic_favorite);
-                    holder.eventFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-                    holder.eventFollow.setBackgroundResource(R.drawable.custom_button);
-                    holder.eventFollow.setTextColor(ContextCompat.getColor(context, R.color.black));
+                    setBtnUnFollowed(holder);
                 }
             }
         });
+
     }
 
     @Override
@@ -98,6 +92,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
     public void updateData(List<EventShort> newList){
         list.clear();
         list.addAll(newList);
+        Log.e("dibug adapter", String.valueOf(list.size()));
         sortList(list);
         notifyDataSetChanged();
     }
@@ -108,15 +103,27 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
 
         String sortParam = sortBy.substring(3);//namedatefollowcity
         String sortOrder = sortBy.substring(0, 3);
-        if(sortParam.equals("name")){
-            if(sortOrder.equals("asc")) {
-                Comparator comparator = Comparator.comparing(EventShort::getName);
-                list.sort(comparator);
-                //dokonczyc, ogarnac zeby pofiltorwana lista tez mogla byc posortowana
-            }
-            else
-                list.sort(Comparator.comparing(EventShort::getName).reversed());
+        Comparator<EventShort> comparator = null;
+        Collator collator = Collator.getInstance(new Locale("pl", "PL"));
+        switch (sortParam) {
+            case "name":
+                comparator = Comparator.comparing(EventShort::getName, collator);
+                break;
+            case "date":
+                comparator = Comparator.comparing(EventShort::getDate);
+                break;
+            case "follow":
+                comparator = Comparator.comparing(EventShort::getFollowersCount);
+                break;
+            case "city":
+                comparator = Comparator.comparing(EventShort::getLocation, collator);
+                break;
         }
+
+        if(sortOrder.equals("asc"))
+            list.sort(comparator);
+        else
+            list.sort(comparator.reversed());
     }
 
     public void updateSortCriteria(String sortBy){
@@ -125,6 +132,21 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
         notifyDataSetChanged();
     }
 
+    private void setBtnUnFollowed(EventListViewHolder holder){
+        holder.eventFollow.setText("Obserwuj");
+        Drawable newIcon = ContextCompat.getDrawable(context, R.drawable.ic_favorite);
+        holder.eventFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+        holder.eventFollow.setBackgroundResource(R.drawable.custom_button);
+        holder.eventFollow.setTextColor(ContextCompat.getColor(context, R.color.black));
+    }
+
+    private void setBtnFollowed(EventListViewHolder holder){
+        holder.eventFollow.setText("Obserwujesz");
+        Drawable newIcon = ContextCompat.getDrawable(context, R.drawable.ic_favorite_white);
+        holder.eventFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+        holder.eventFollow.setBackgroundResource(R.drawable.button_pressed);
+        holder.eventFollow.setTextColor(ContextCompat.getColor(context, R.color.white));
+    }
 }
 
 class EventListViewHolder extends RecyclerView.ViewHolder{

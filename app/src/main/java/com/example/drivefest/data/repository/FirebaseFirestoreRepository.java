@@ -1,11 +1,13 @@
 package com.example.drivefest.data.repository;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.drivefest.data.model.Event;
 import com.example.drivefest.data.model.EventShort;
+import com.example.drivefest.data.model.Workshop;
 import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -82,5 +84,60 @@ public class FirebaseFirestoreRepository {
                     }
                 });
     }
+
+    public void getFollowedEvents(String userId, DatabaseDataCallback callback){
+        mDatabase.collection("fav_events")
+                .whereEqualTo("userId", "hR3XI705oabbMqILbDTE3MpHBl43")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<EventShort> eventList = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                EventShort event = new EventShort();
+                                event.setData(document.getData(), document.getId());
+                                eventList.add(event);
+                                Log.d("successfavortie", document.getData().toString());
+                                Log.d("countfav", String.valueOf(eventList.size()));
+
+                            }
+                            Log.d("coun2tfav", String.valueOf(eventList.size()));
+                            callback.OnSuccess(eventList);
+                        } else {
+                            Log.d("failfav", task.getException().toString());
+                            callback.OnFail(task.getException().getMessage());
+                        }
+                    }
+                });
+    }
+
+    public void getWorkshops(DatabaseDataCallback callback){
+        mDatabase.collection("workshops")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<Workshop> workshopsList = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Workshop workshop = new Workshop();
+                                workshop.setData(document.getData(), document.getId());
+                                workshopsList.add(workshop);
+                                Log.d("success", document.getData().toString());
+                                Log.d("count", String.valueOf(workshopsList.size()));
+
+                            }
+                            Log.d("coun2t", String.valueOf(workshopsList.size()));
+                            callback.OnSuccess(workshopsList);
+                        } else {
+                            Log.d("fail", task.getException().toString());
+                            callback.OnFail(task.getException().getMessage());
+                        }
+
+                    }
+                });
+    }
+
 
 }

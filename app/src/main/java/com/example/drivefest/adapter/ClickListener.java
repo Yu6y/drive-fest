@@ -1,7 +1,5 @@
 package com.example.drivefest.adapter;
 
-import android.view.View;
-
-public interface EventClickListener {
+public interface ClickListener {
     void onClick(String id);
 }

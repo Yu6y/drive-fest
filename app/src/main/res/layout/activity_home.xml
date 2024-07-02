@@ -25,82 +25,11 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <LinearLayout
-            android:id="@+id/btnLayout"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_gravity="center">
-
-                <Button
-                    android:id="@+id/buttonFiltruj"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Filrtuj"
-                    android:onClick="btnFiltruj"
-                    android:background="@drawable/button_list_click"
-                    android:textColor="#333333" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_gravity="center">
-
-                <Button
-                    android:id="@+id/buttonSortuj"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sortuj"
-                    android:textColor="#333333"
-                    android:onClick="btnSortuj"
-                    android:background="@drawable/button_list_click" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_gravity="center">
-
-                <Button
-                    android:id="@+id/buttonWyszukaj"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Wyszukaj"
-                    android:textColor="#333333"
-                    android:onClick="btnWyszukaj"
-                    android:background="@drawable/button_list_click" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <SearchView
-            android:id="@+id/searchView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/custom_button"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:iconifiedByDefault="false"
-            android:visibility="gone" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/event_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingBottom="56dp"
-            android:layout_margin="3dp" />
+            android:layout_height="match_parent"
+            android:id="@+id/container"
+            />
 
     </LinearLayout>
 
@@ -110,6 +39,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu" />
+        app:menu="@menu/nav_menu"
+        app:itemIconTint="@color/orange"
+        />
 
 </androidx.drawerlayout.widget.DrawerLayout>

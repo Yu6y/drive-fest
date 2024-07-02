@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-
-    tools:context=".FilterActivity">
+    tools:context=".FilterEventFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -112,10 +111,11 @@
         android:padding="2dp"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         >
 
         <Button
-            android:id="@+id/buttonClear"
+            android:id="@+id/filterButtonClear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/custom_button"
@@ -126,7 +126,7 @@
             />
 
         <Button
-            android:id="@+id/buttonAccept"
+            android:id="@+id/filterButtonAccept"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
@@ -134,6 +134,7 @@
             android:text="Akceptuj"
             android:layout_marginTop="2dp"
             android:onClick="onAcceptClick"
+            android:layout_marginBottom="45dp"
             />
     </LinearLayout>
 </LinearLayout>
