@@ -1,6 +1,7 @@
 package com.example.drivefest;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drivefest.adapter.ClickListener;
 import com.example.drivefest.adapter.WorkshopListAdapter;
+import com.example.drivefest.data.model.Workshop;
 import com.example.drivefest.viewmodel.HomeViewModel;
 
 import java.util.ArrayList;
@@ -47,15 +49,31 @@ public class WorkshopsFragment extends Fragment {
         workshopListAdapter = new WorkshopListAdapter(getContext(), new ArrayList<>(), new ClickListener() {
             @Override
             public void onClick(String id) {
-                /*// Navigate to the event description fragment or activity
+
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("workshop_id",(Parcelable) homeVM.getEventShortList().getValue().get(Integer.valueOf(id)));
-                EventDescFragment fragment = new EventDescFragment();
+                Workshop foundWorkshop = null;
+                Log.e("tu dochodzi","II");
+                for (Workshop workshop : homeVM.getWorkshopsLiveData().getValue()) {
+                    Log.e("dibug workshp[", workshop.getId() + " = " + id);
+                    if (workshop.getId().equals(id)) {
+                        foundWorkshop = workshop;
+                        break;
+                    }
+                }
+                if (foundWorkshop != null) {
+
+                    bundle.putParcelable("workshop_id", foundWorkshop);
+                    System.out.println("Znaleziono i umieszczono obiekt w Bundle: " + foundWorkshop.getName());
+                } else {
+                    System.out.println("Nie znaleziono obiektu o id: " + id);
+                }
+
+                WorkshopDescFragment fragment = new WorkshopDescFragment();
                 fragment.setArguments(bundle);
                 getParentFragmentManager()
                         .beginTransaction()
                         .replace(R.id.container,fragment)
-                        .commit();*/
+                        .commit();
             }
         });
         list.setAdapter(workshopListAdapter);

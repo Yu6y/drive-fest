@@ -34,6 +34,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private String startDate, endDate, sortBy;
     private ActivityResultLauncher<Intent> filterActivityResultLauncher;
     private ActivityResultLauncher<Intent> sortActivityResultLauncher;
+    private ActionBarDrawerToggle toggle;
+    private Toolbar toolbar;
+    private NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,15 +49,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
 
         drawerLayout = findViewById(R.id.home_drawer);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         drawerLayout = findViewById(R.id.home_drawer);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.orange)));
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar, R.string.open,
+
+        toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar, R.string.open,
                 R.string.close);
         drawerLayout.addDrawerListener(toggle);
         //toggle.setDrawerIndicatorEnabled(true);
@@ -65,6 +69,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             toolbar.setPadding(0, topInset, 0, 0);
             return insets;
         });
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         homeVM = new ViewModelProvider(this).get(HomeViewModel.class);
         homeVM.fetchEventShortList();
@@ -116,5 +121,28 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }*/
         super.onBackPressed();
+    }
+    public void setupDrawerToggle() {
+
+        setSupportActionBar(toolbar);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        //toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar, R.string.open,
+         //       R.string.close);
+        drawerLayout.addDrawerListener(toggle);
+        //toggle.setDrawerIndicatorEnabled(true);
+        toggle.syncState();
+
+
+      /*  setSupportActionBar(toolbar);
+
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+        toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar, R.string.open,
+                R.string.close);
+        drawerLayout.addDrawerListener(toggle);
+        //toggle.setDrawerIndicatorEnabled(true);
+        toggle.syncState();*/
     }
 }

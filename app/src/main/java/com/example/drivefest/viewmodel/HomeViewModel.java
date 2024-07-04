@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.drivefest.data.model.EventShort;
 import com.example.drivefest.data.model.Workshop;
+import com.example.drivefest.data.model.WorkshopDesc;
 import com.example.drivefest.data.repository.FirebaseAuthRepository;
 import com.example.drivefest.data.repository.FirebaseFirestoreRepository;
 import com.example.drivefest.data.repository.FirebaseStorageRepository;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeViewModel extends ViewModel {
 
@@ -28,6 +30,7 @@ public class HomeViewModel extends ViewModel {
     private MutableLiveData<List<EventShort>> favEventShortLiveData;
     private MutableLiveData<List<Workshop>> workshopsLiveData;
     private List<Workshop> workshopsFiltered;
+    private MutableLiveData<WorkshopDesc> workshopDesc;
     private String userId;
     public HomeViewModel(){
         mDb = FirebaseFirestoreRepository.getDbInstance();
@@ -39,6 +42,7 @@ public class HomeViewModel extends ViewModel {
         //userId = mAuth.getCurrentUserId();
         workshopsLiveData = new MutableLiveData<>();
         workshopsFiltered = new ArrayList<>();
+        workshopDesc = new MutableLiveData<>();
     }
 
     public void fetchEventShortList(){
@@ -302,5 +306,29 @@ public class HomeViewModel extends ViewModel {
 
     public List<Workshop> getWorkshopsFiltered(){
         return workshopsFiltered;
+    }
+
+    public void updateWorkshopDesc(Workshop workshop){
+        workshopDesc.postValue(new WorkshopDesc(workshop));
+        mDb.getWorkshopDesc(workshop.getId(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                updateWorkshopDescription((Map<String, Object>)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.d("response workshopdesc", response);
+            }
+        });
+    }
+    private void updateWorkshopDescription(Map<String, Object> map){
+        WorkshopDesc temp = workshopDesc.getValue();
+        temp.setDescription((String)map.get("description"));
+        temp.setAddress((String)map.get("address"));
+        workshopDesc.postValue(temp);
+    }
+    public MutableLiveData<WorkshopDesc> getWorkshopDesc(){
+        return workshopDesc;
     }
 }

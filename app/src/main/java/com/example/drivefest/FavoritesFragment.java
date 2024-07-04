@@ -39,7 +39,7 @@ public class FavoritesFragment extends Fragment {
             @Override
             public void onClick(String id) {
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("event_id",(Parcelable) homeVM.getFavEventShortLiveData().getValue().get(Integer.valueOf(id)));
+                bundle.putParcelable("event_id",(Parcelable) homeVM.getEventShortList().getValue().get(Integer.valueOf(id)));
                 EventDescFragment fragment = new EventDescFragment();
                 fragment.setArguments(bundle);
                 getParentFragmentManager()

@@ -96,7 +96,7 @@ public class FirebaseFirestoreRepository {
                             List<EventShort> eventList = new ArrayList<>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 EventShort event = new EventShort();
-                                event.setData(document.getData(), document.getId());
+                                event.setData(document.getData(), document.getData().get("eventId").toString());
                                 eventList.add(event);
                                 Log.d("successfavortie", document.getData().toString());
                                 Log.d("countfav", String.valueOf(eventList.size()));
@@ -139,5 +139,28 @@ public class FirebaseFirestoreRepository {
                 });
     }
 
+    public void getWorkshopDesc(String id, DatabaseDataCallback callback){
+        mDatabase.collection("workshops")
+                .document(id)
+                .collection("workshop_desc")
+                .document("0")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            Map<String, Object> doc = task.getResult().getData();
+                            Log.d("data", task.getResult().getData().toString());
+                            List<Map<?, ?>> response = new ArrayList<>();
+                            response.add(doc);
+                            callback.OnSuccess(response);
+                        }
+                        else{
+                            Log.e("WorkshopDesc", "Error");
+                            callback.OnFail("Fail");
+                        }
+                    }
+                });
+    }
 
 }

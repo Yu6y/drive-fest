@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -40,7 +42,6 @@ public class EventsFragment extends Fragment{
 
         homeVM = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
-
         list = view.findViewById(R.id.event_list);
         list.setHasFixedSize(true);
         list.setLayoutManager(new GridLayoutManager(getContext(), 1));
@@ -55,7 +56,8 @@ public class EventsFragment extends Fragment{
                 fragment.setArguments(bundle);
                 getParentFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container,fragment)
+                        .replace(R.id.container,fragment, "descFragment")
+                        .addToBackStack("desc")
                         .commit();
             }
         });
@@ -171,7 +173,6 @@ public class EventsFragment extends Fragment{
 
         return view;
     }
-
 
     public boolean hideSearchView() {
         if(searchView.getVisibility() == View.VISIBLE) {

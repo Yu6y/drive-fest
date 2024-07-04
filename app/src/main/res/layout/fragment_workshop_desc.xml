@@ -3,44 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EventDescFragment"
-    android:id="@+id/eventdesc"
+    tools:context=".WorkshopDescFragment"
+    android:id="@+id/workshopdesc"
     >
-
-    <!--android:fitsSystemWindows="false"-->
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/event_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:layout_marginTop="-34dp"
-        >
-        <!--android:paddingTop="-10dp"
-android:fitsSystemWindows="true"
-        -->
-
+        android:layout_marginTop="-34dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-
             >
-            <!--android:fitsSystemWindows="false"
-            android:paddingTop="0dp"
-            android:layout_marginTop="0dp"-->
 
             <ImageView
-                android:id="@+id/eventDesc_image"
+                android:id="@+id/workshopDesc_image"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"/>
-
-                <!--android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp"/-->
+                android:layout_height="200dp" />
 
             <TextView
-                android:id="@+id/eventDesc_title"
+                android:id="@+id/workshopDesc_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
@@ -49,9 +35,7 @@ android:fitsSystemWindows="true"
                 android:maxLines="3"
                 android:scrollHorizontally="true"
                 android:textSize="25sp"
-                android:padding="7dp"/>
-            <!--
-                android:paddingTop="0dp" /-->
+                android:padding="7dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -64,8 +48,8 @@ android:fitsSystemWindows="true"
                 android:orientation="vertical"
                 android:padding="5dp"
                 android:layout_gravity="center">
-                <!--android:paddingTop="0dp"-->
 
+                <!-- to do rating-->
                 <Button
                     android:id="@+id/eventDesc_btn_follow"
                     android:layout_width="200dp"
@@ -80,17 +64,17 @@ android:fitsSystemWindows="true"
                     android:drawableEnd="@drawable/ic_favorite" />
 
                 <TextView
-                    android:id="@+id/eventDesc_followers"
+                    android:id="@+id/workshopDesc_rating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Obserwujących: 30"
+                    android:text="Ocena: "
                     android:padding="4dp"
                     android:textSize="16sp"
-                    android:layout_gravity="center"/>
-                    <!--android:paddingTop="0dp" />-->
+                    android:layout_gravity="center"
+                    />
 
                 <TextView
-                    android:id="@+id/eventDesc_city"
+                    android:id="@+id/workshopDesc_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
@@ -99,47 +83,28 @@ android:fitsSystemWindows="true"
                     android:drawablePadding="3dp"
                     android:textSize="16sp"
                     />
-                   <!-- android:paddingTop="0dp"-->
 
                 <TextView
-                    android:id="@+id/eventDesc_date"
+                    android:id="@+id/workshopDesc_tags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_date"
+                    android:drawableStart="@drawable/ic_tag"
                     android:text=""
                     android:padding="7dp"
                     android:drawablePadding="3dp"
-                    android:textSize="16sp"/>
-                    <!--android:paddingTop="0dp" /-->
+                    android:textSize="16sp"
+                    />
             </LinearLayout>
 
             <TextView
-                android:id="@+id/eventDesc_text"
+                android:id="@+id/workshopDesc_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
                 android:scrollHorizontally="true"
                 android:textSize="16sp"
-                android:padding="7dp"/>
-                <!--android:paddingTop="0dp" /-->
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center">
-                <!--android:paddingTop="0dp">-->
-
-                <TextView
-                    android:id="@+id/eventDesc_tags"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:scrollHorizontally="true"
-                    android:textSize="16sp"
-                    android:padding="7dp"/>
-                    <!--android:paddingTop="0dp"-->
-            </LinearLayout>
+                android:padding="7dp"
+                />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
