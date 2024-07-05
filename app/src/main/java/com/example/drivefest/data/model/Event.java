@@ -11,13 +11,6 @@ public class Event extends EventShort{
         description = null;
         locationCords = null;
     }
-
-    public Event(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags,
-                 String voivodeship, String description, String place){
-        super(id, name, image, date, location, followersCount, tags, voivodeship);
-        this.description = description;
-        this.locationCords = place;
-    }
     public Event(EventShort eventShort){
         super(eventShort.getId(),
                 eventShort.getName(),
@@ -26,7 +19,8 @@ public class Event extends EventShort{
                 eventShort.getLocation(),
                 eventShort.getFollowersCount(),
                 eventShort.getTags(),
-                eventShort.getVoivodeship());
+                eventShort.getVoivodeship(),
+                eventShort.getIsFollowed());
     }
 
     public void setData(Map<String, Object> document){

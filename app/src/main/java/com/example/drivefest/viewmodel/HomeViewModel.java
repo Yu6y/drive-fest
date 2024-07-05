@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.drivefest.data.model.Event;
 import com.example.drivefest.data.model.EventShort;
 import com.example.drivefest.data.model.Workshop;
 import com.example.drivefest.data.model.WorkshopDesc;
@@ -103,7 +104,8 @@ public class HomeViewModel extends ViewModel {
 
         if (currentCount == totalCount) {
             Log.e("dibug notfav", "to 1");
-            eventShortListLiveData.postValue(listTemp);
+                eventShortListLiveData.postValue(listTemp);
+
         }
     }
 
@@ -143,7 +145,7 @@ public class HomeViewModel extends ViewModel {
 
             for(EventShort elem: currentList){
                 if(elem.getDate().isAfter(fromDate.minusDays(1)) && elem.getDate().isBefore(toDate.plusDays(1))
-                    && (voivTags.get("Województwo").contains(elem.getVoivodeship()) || voivTags.get("Województwo").isEmpty())
+                        && (voivTags.get("Województwo").contains(elem.getVoivodeship()) || voivTags.get("Województwo").isEmpty())
                 ){
                     for(String tag: elem.getTags())
                         if(voivTags.get("Tagi").contains(tag) || voivTags.get("Tagi").isEmpty()) {
@@ -172,6 +174,7 @@ public class HomeViewModel extends ViewModel {
                 for(Object obj : list) {
                     if (obj instanceof EventShort) {
                         EventShort eventShort = (EventShort) obj;
+                        eventShort.setFollowed();
                         listTemp.add(eventShort);
 
                         if(!eventShort.getImage().isEmpty()) {
@@ -217,10 +220,17 @@ public class HomeViewModel extends ViewModel {
 
     public void setFollowedEvents(){
         Log.e("Tu sie", "wypierdala");
-        for(EventShort event : eventShortListLiveData.getValue()){
-            if(favEventShortLiveData.getValue().contains(event))
-                event.setFollowed();
+        for(EventShort event : favEventShortLiveData.getValue()){
+            for(EventShort eventShort: eventShortListLiveData.getValue()){
+                Log.e("porownanie", event.getId() + " _ " + eventShort.getId());
+                if(event.getId().equals(eventShort.getId())){
+                    eventShort.setFollowed();
+                    break;
+                }
+            }
         }
+        for(EventShort t : getEventShortList().getValue())
+            Log.e("debug follow", String.valueOf(t.getIsFollowed()));
     }
     public void fetchWorkshopsList(){
         mDb.getWorkshops(new DatabaseDataCallback() {

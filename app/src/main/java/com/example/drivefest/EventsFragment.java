@@ -12,6 +12,7 @@ import android.widget.SearchView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drivefest.adapter.ClickListener;
 import com.example.drivefest.adapter.EventListAdapter;
+import com.example.drivefest.data.model.EventShort;
 import com.example.drivefest.viewmodel.HomeViewModel;
 
 import java.util.ArrayList;
@@ -37,8 +39,9 @@ public class EventsFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_events, container, false);
 
+        View view = inflater.inflate(R.layout.fragment_events, container, false);
+        Log.e("lifecycle", "oncreateview");
         homeVM = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         list = view.findViewById(R.id.event_list);
@@ -66,12 +69,13 @@ public class EventsFragment extends Fragment{
 
         homeVM.getEventShortList().observe(getViewLifecycleOwner(), eventShorts -> {
             Log.e("cos", "nietego");
-            //eventListAdapter.updateData(eventShorts);
-            homeVM.getFavEventShortLiveData().observe(getViewLifecycleOwner(), favEventShorts -> {
-                homeVM.setFollowedEvents();
                 eventListAdapter.updateData(eventShorts);
+                homeVM.getFavEventShortLiveData().observe(getViewLifecycleOwner(), favEventShorts -> {
+                homeVM.setFollowedEvents();
+                eventListAdapter.notifyDataSetChanged();
             });
         });
+
 
         linearLayout = view.findViewById(R.id.btnLayout);
         searchView = view.findViewById(R.id.searchView);
@@ -183,6 +187,8 @@ public class EventsFragment extends Fragment{
 
         return view;
     }
+
+
 
     public void hideSearchView() {
         if(searchView.getVisibility() == View.VISIBLE) {

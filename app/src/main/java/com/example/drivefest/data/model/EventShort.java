@@ -27,7 +27,7 @@ public class EventShort implements Parcelable {
     private String voivodeship;
     private boolean isFollowed;
 
-    public EventShort(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags, String voivodeship) {
+    public EventShort(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags, String voivodeship, boolean isFollowed) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -36,7 +36,7 @@ public class EventShort implements Parcelable {
         this.followersCount = followersCount;
         this.tags = tags;
         this.voivodeship = voivodeship;
-        this.isFollowed = false;
+        this.isFollowed = isFollowed;
     }
 
     public EventShort(){

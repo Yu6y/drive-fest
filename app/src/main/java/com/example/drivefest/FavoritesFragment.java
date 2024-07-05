@@ -3,6 +3,7 @@ package com.example.drivefest;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,9 +43,12 @@ public class FavoritesFragment extends Fragment {
                 bundle.putParcelable("event_id",(Parcelable) homeVM.getEventShortList().getValue().get(Integer.valueOf(id)));
                 EventDescFragment fragment = new EventDescFragment();
                 fragment.setArguments(bundle);
+                FragmentManager fragmentManager = getParentFragmentManager();
+                Fragment currFragment = fragmentManager.findFragmentByTag("favoriteFragment");
                 getParentFragmentManager()
                         .beginTransaction()
                         .add(R.id.container,fragment, "descFragment")
+                        .hide(currFragment)
                         .addToBackStack("favDesc")
                         .commit();
             }
@@ -52,7 +56,7 @@ public class FavoritesFragment extends Fragment {
         favList.setAdapter(eventListAdapter);
 
         homeVM.getFavEventShortLiveData().observe(getViewLifecycleOwner(), favEventShorts -> {
-            homeVM.setFollowedEvents();
+            //homeVM.setFollowedEvents();
             eventListAdapter.updateData(favEventShorts);
         });
 

@@ -51,6 +51,10 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
         holder.eventDate.setText(list.get(position).getDate().toString());
         holder.eventCity.setText(list.get(position).getLocation());
         holder.eventFollowers.setText("Obserwujących: " + list.get(position).getFollowersCount());
+        if(list.get(position).getIsFollowed()) {
+            Log.e("adapter", "followed");
+            setBtnFollowed(holder);
+        }
         Glide
                 .with(context)
                 .load(list.get(position).getImage())
@@ -58,10 +62,8 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
                 .placeholder(R.drawable.ic_cloud_download)
                 .error(R.drawable.ic_error)
                 .into(holder.eventPicture);
-        if(list.get(position).getIsFollowed()) {
-            Log.e("adapter", "przycosl");
-            setBtnUnFollowed(holder);
-        }
+        Log.e("boolean", String.valueOf(list.get(position).getIsFollowed()));
+
 
         int pos = position;
         holder.listElem.setOnClickListener(new View.OnClickListener() {

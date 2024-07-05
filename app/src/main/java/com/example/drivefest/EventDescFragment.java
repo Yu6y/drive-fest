@@ -2,6 +2,7 @@
 
     import android.graphics.drawable.Drawable;
     import android.os.Bundle;
+    import android.util.Log;
     import android.view.LayoutInflater;
     import android.view.MenuItem;
     import android.view.View;
@@ -61,7 +62,10 @@
                         text.setText(event.getDescription());
                         city.setText(event.getLocation());
                         date.setText(event.getDate().toString());
-
+                        Log.e("evenrtdsc", String.valueOf(event.getIsFollowed()));
+                        if(event.getIsFollowed()){
+                            setBtnFollow();
+                        }
                         String tag = "";
                         String[] tagsArray = event.getTags();
                         for(int i = 0; i < tagsArray.length; i++){
@@ -87,17 +91,9 @@
 
             btnFollow.setOnClickListener( v -> {
                     if (btnFollow.getText().equals("Obserwuj")) {
-                        btnFollow.setText("Obserwujesz");
-                        Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white);
-                        btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-                        btnFollow.setBackgroundResource(R.drawable.button_pressed);
-                        btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                        setBtnFollow();
                     } else if (btnFollow.getText().equals("Obserwujesz")) {
-                        btnFollow.setText("Obserwuj");
-                        Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite);
-                        btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-                        btnFollow.setBackgroundResource(R.drawable.custom_button);
-                        btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+                        setBtnUnfollow();
                     }
 
             });
@@ -143,5 +139,19 @@
                 fragmentManager.popBackStack();
             }
         }
+        public void setBtnUnfollow(){
+            btnFollow.setText("Obserwuj");
+            Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite);
+            btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+            btnFollow.setBackgroundResource(R.drawable.custom_button);
+            btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        }
 
+        public void setBtnFollow(){
+            btnFollow.setText("Obserwujesz");
+            Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white);
+            btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+            btnFollow.setBackgroundResource(R.drawable.button_pressed);
+            btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        }
     }
