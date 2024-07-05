@@ -1,13 +1,17 @@
 package com.example.drivefest;
 
+import android.accessibilityservice.GestureDescription;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +32,14 @@ public class SortEventFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sort_event, container, false);
 
         radioGroup = view.findViewById(R.id.radioGroup);
-        radioGroup.check(R.id.xdefault);
+
+        if(getArguments() != null) {
+            Log.e("args", String.valueOf(getArguments().size()));
+            radioGroup.check(getArguments().getInt("sort"));
+        }
+        else
+            radioGroup.check(R.id.xdefault);
+
 
         Button acceptButton = view.findViewById(R.id.sortbuttonAccept);
         acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -36,37 +47,53 @@ public class SortEventFragment extends Fragment {
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 RadioButton button = getView().findViewById(radioGroup.getCheckedRadioButtonId());
-                bundle.putString("sort", getResources().getResourceEntryName(button.getId()));
-
-                getParentFragmentManager().setFragmentResult("sortResult", bundle);
+                bundle.putInt("sort", button.getId());
+                Log.e("sort id", String.valueOf(button.getId()));
                 FragmentManager fragmentManager = getParentFragmentManager();
-                Fragment fragment = fragmentManager.findFragmentByTag("eventsFragment");
+                fragmentManager.setFragmentResult("sortResult", bundle);
                 Fragment currFragment = fragmentManager.findFragmentByTag("sortFragment");
-                fragment.setArguments(bundle);
                 fragmentManager
                         .beginTransaction()
                         .hide(currFragment)
-                        .show(fragment)
                         .commit();
+                fragmentManager.popBackStack();
             }
         });
         return view;
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("selectedButton", radioGroup.getCheckedRadioButtonId());
-    }
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null) {
-            int selectedRadioButtonId = savedInstanceState.getInt("selectedButton", -1);
-            if (selectedRadioButtonId != -1) {
-                radioGroup.check(selectedRadioButtonId);
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null && activity.getSupportActionBar() != null) {
+            ((HomeActivity) activity).setupDrawerToggle(true);
+
+            Toolbar toolbar = activity.findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setNavigationOnClickListener(v -> close());
             }
         }
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ((HomeActivity) activity).setupDrawerToggle(false);
+        }
+    }
+
+    public void close() {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("sortFragment");
+        if (fragment != null) {
+            fragmentManager.beginTransaction().hide(fragment).commit();
+            fragmentManager.popBackStack();
+        }
+    }
+
 
 }

@@ -44,7 +44,8 @@ public class FavoritesFragment extends Fragment {
                 fragment.setArguments(bundle);
                 getParentFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container,fragment)
+                        .add(R.id.container,fragment, "descFragment")
+                        .addToBackStack("favDesc")
                         .commit();
             }
         });

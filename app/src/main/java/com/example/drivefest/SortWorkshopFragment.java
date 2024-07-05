@@ -4,9 +4,12 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,44 +26,63 @@ public class SortWorkshopFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sort_workshop, container, false);
 
         radioGroup = view.findViewById(R.id.workshopRadioGroup);
-        radioGroup.check(R.id.wxdefault);
-
+        if(getArguments() != null) {
+            Log.e("args", String.valueOf(getArguments().size()));
+            radioGroup.check(getArguments().getInt("sort"));
+        }
+        else
+            radioGroup.check(R.id.wxdefault);
         Button acceptButton = view.findViewById(R.id.wrkshpsortbuttonAccept);
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 RadioButton button = getView().findViewById(radioGroup.getCheckedRadioButtonId());
-                bundle.putString("sort", getResources().getResourceEntryName(button.getId()));
+                bundle.putInt("sort", button.getId());
 
-                getParentFragmentManager().setFragmentResult("sortWorkshopResult", bundle);
                 FragmentManager fragmentManager = getParentFragmentManager();
-                Fragment fragment = fragmentManager.findFragmentByTag("workshopsFragment");
+                fragmentManager.setFragmentResult("sortWorkshopResult", bundle);
                 Fragment currFragment = fragmentManager.findFragmentByTag("sortWorkshopFragment");
-                fragment.setArguments(bundle);
                 fragmentManager
                         .beginTransaction()
                         .hide(currFragment)
-                        .show(fragment)
                         .commit();
+                fragmentManager.popBackStack();
             }
         });
         return view;
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("selectedButton", radioGroup.getCheckedRadioButtonId());
-    }
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null) {
-            int selectedRadioButtonId = savedInstanceState.getInt("selectedButton", -1);
-            if (selectedRadioButtonId != -1) {
-                radioGroup.check(selectedRadioButtonId);
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null && activity.getSupportActionBar() != null) {
+            ((HomeActivity) activity).setupDrawerToggle(true);
+
+            Toolbar toolbar = activity.findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setNavigationOnClickListener(v -> close());
             }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ((HomeActivity) activity).setupDrawerToggle(false);
+        }
+    }
+
+    public void close() {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("sortWorkshopFragment");
+        if (fragment != null) {
+            fragmentManager.beginTransaction().hide(fragment).commit();
+            fragmentManager.popBackStack();
         }
     }
 }

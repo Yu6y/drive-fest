@@ -30,6 +30,7 @@ public class ExpandableListDataItems {
         return expandableList;
     }
     private static void setVoivodeships(){
+        voivodeships.clear();
         voivodeships.add("Dolnośląskie");
         voivodeships.add("Kujawsko-Pomorskie");
         voivodeships.add("Lubelskie");

@@ -31,6 +31,12 @@ public class HomeViewModel extends ViewModel {
     private MutableLiveData<List<Workshop>> workshopsLiveData;
     private List<Workshop> workshopsFiltered;
     private MutableLiveData<WorkshopDesc> workshopDesc;
+    private int sortEvent;
+    private String filterStartDate, filterEndDate;
+    private HashMap<String, List<String>> filterCheckedItems;
+    private int sortWorkshop;
+    private int rateWorkshop;
+    private HashMap<String, List<String>> filterCheckedItemsWorkshop;
     private String userId;
     public HomeViewModel(){
         mDb = FirebaseFirestoreRepository.getDbInstance();
@@ -43,6 +49,12 @@ public class HomeViewModel extends ViewModel {
         workshopsLiveData = new MutableLiveData<>();
         workshopsFiltered = new ArrayList<>();
         workshopDesc = new MutableLiveData<>();
+        sortEvent = -1;
+        filterStartDate = null;
+        filterEndDate = null;
+        filterCheckedItems = null;
+        sortWorkshop = -1;
+        filterCheckedItemsWorkshop = null;
     }
 
     public void fetchEventShortList(){
@@ -102,7 +114,14 @@ public class HomeViewModel extends ViewModel {
     public void setFilteredList(String filter, String startDate, String endDate, HashMap<String, List<String>> voivTags){
         List<EventShort> filteredList = new ArrayList<>();
         List<EventShort> currentList = eventShortListLiveData.getValue();
+
         if(startDate == null && endDate == null && voivTags == null) {
+            if(!eventShortFiltered.isEmpty()) {
+                Log.e("fioilter", String.valueOf(currentList.size()));
+
+                currentList = eventShortFiltered;
+                Log.e("fioilter2", String.valueOf(currentList.size()));
+            }
             for (EventShort elem : currentList) {
                 if (elem.getName().toLowerCase().contains(filter.toLowerCase())) {
                     filteredList.add(elem);
@@ -258,6 +277,8 @@ public class HomeViewModel extends ViewModel {
     public void setWorkshopsFilteredList(String filter, String rating, HashMap<String, List<String>> voivTags){
         List<Workshop> filteredList = new ArrayList<>();
         List<Workshop> currentList = workshopsLiveData.getValue();
+        if(!workshopsFiltered.isEmpty())
+            currentList = workshopsFiltered;
         if(rating == null && voivTags == null) {
             for (Workshop elem : currentList) {
                 if (elem.getName().toLowerCase().contains(filter.toLowerCase())) {
@@ -330,5 +351,43 @@ public class HomeViewModel extends ViewModel {
     }
     public MutableLiveData<WorkshopDesc> getWorkshopDesc(){
         return workshopDesc;
+    }
+
+    public void setEventSort(int sort){
+        sortEvent = sort;
+    }
+    public int getSortEvent(){
+        return sortEvent;
+    }
+    public void setFilterItems(String start, String end, HashMap<String, List<String>> items){
+        filterStartDate = start;
+        filterEndDate = end;
+        filterCheckedItems = items;
+    }
+    public String getFilterStartDate(){
+        return filterStartDate;
+    }
+    public String getFilterEndDate(){
+        return filterEndDate;
+    }
+    public HashMap<String, List<String>> getFilterCheckedItems(){
+        return filterCheckedItems;
+    }
+
+    public void setWorkshopSort(int sort){
+        sortWorkshop = sort;
+    }
+    public int getSortWorkshop(){
+        return sortWorkshop;
+    }
+    public void setFilterWorkshopItems(int rate,  HashMap<String, List<String>> items){
+        rateWorkshop = rate;
+        filterCheckedItemsWorkshop = items;
+    }
+    public int getRateWorkshop(){
+        return rateWorkshop;
+    }
+    public HashMap<String, List<String>> getFilterCheckedItemsWorkshop(){
+        return filterCheckedItemsWorkshop;
     }
 }

@@ -10,9 +10,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -49,14 +48,16 @@ public class EventsFragment extends Fragment{
         eventListAdapter = new EventListAdapter(getContext(), new ArrayList<>(), new ClickListener() {
             @Override
             public void onClick(String id) {
-                // Navigate to the event description fragment or activity
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("event_id",(Parcelable) homeVM.getEventShortList().getValue().get(Integer.valueOf(id)));
                 EventDescFragment fragment = new EventDescFragment();
                 fragment.setArguments(bundle);
+                FragmentManager fragmentManager = getParentFragmentManager();
+                Fragment currFragment = fragmentManager.findFragmentByTag("eventsFragment");
                 getParentFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.container,fragment, "descFragment")
+                        .add(R.id.container,fragment, "descFragment")
+                        .hide(currFragment)
                         .addToBackStack("desc")
                         .commit();
             }
@@ -102,49 +103,47 @@ public class EventsFragment extends Fragment{
         Button buttonSortuj = view.findViewById(R.id.eventsButtonSortuj);
         buttonSortuj.setOnClickListener(v -> {
             FragmentManager fragmentManager = getParentFragmentManager();
-            Fragment fragment = fragmentManager.findFragmentByTag("sortFragment");
-
-            if(fragment == null) {
-                fragmentManager
-                        .beginTransaction()
-                        .add(R.id.container, new SortEventFragment(), "sortFragment")
-                        .hide(this)
-                        .addToBackStack(null)
-                        .commit();
-            }else {
-                fragmentManager
-                        .beginTransaction()
-                        .hide(this)
-                        .show(fragment)
-                        .commit();
+            Fragment fragment = new SortEventFragment();
+            if(homeVM.getSortEvent() != -1) {
+                Bundle bundle = new Bundle();
+                bundle.putInt("sort", homeVM.getSortEvent());
+                fragment.setArguments(bundle);
             }
+            fragmentManager
+                    .beginTransaction()
+                    .add(R.id.container, fragment, "sortFragment")
+                    .hide(this)
+                    .addToBackStack("sort")
+                    .commit();
         });
+
         Button buttonFiltruj = view.findViewById(R.id.eventsButtonFiltruj);
         buttonFiltruj.setOnClickListener(v -> {
             FragmentManager fragmentManager = getParentFragmentManager();
-            Fragment fragment = fragmentManager.findFragmentByTag("filterFragment");
-
-            if(fragment == null) {
-                fragmentManager
-                        .beginTransaction()
-                        .add(R.id.container, new FilterEventFragment(), "filterFragment")
-                        .hide(this)
-                        .addToBackStack(null)
-                        .commit();
-            }else {
-                fragmentManager
-                        .beginTransaction()
-                        .hide(this)
-                        .show(fragment)
-                        .commit();
+            Fragment fragment = new FilterEventFragment();
+            if(homeVM.getFilterStartDate() != null && homeVM.getFilterEndDate() != null
+                    && homeVM.getFilterCheckedItems() != null){
+                Bundle bundle = new Bundle();
+                bundle.putString("startDate", homeVM.getFilterStartDate());
+                bundle.putString("endDate", homeVM.getFilterEndDate());
+                bundle.putSerializable("checkedItems", homeVM.getFilterCheckedItems());
+                fragment.setArguments(bundle);
             }
+            fragmentManager
+                    .beginTransaction()
+                    .add(R.id.container, fragment, "filterFragment")
+                    .hide(this)
+                    .addToBackStack("filter")
+                    .commit();
+
         });
 
         getParentFragmentManager().setFragmentResultListener("sortResult", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
                 Log.e("Wchodzi", "jak w maslo2");
-                String sort = bundle.getString("sort");
+                homeVM.setEventSort(bundle.getInt("sort"));
+                String sort = getResources().getResourceEntryName(homeVM.getSortEvent());
                 eventListAdapter.updateSortCriteria(sort);
                 if(sort.equals("xdefault")) {
                     if (homeVM.getFilteredList().isEmpty()) {
@@ -163,23 +162,32 @@ public class EventsFragment extends Fragment{
         getParentFragmentManager().setFragmentResultListener("filterResult", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
-                homeVM.setFilteredList(null, bundle.getString("startDate"),
+                homeVM.setFilterItems(bundle.getString("startDate"),
                         bundle.getString("endDate"),
                         (HashMap<String, List<String>>)bundle.getSerializable("checkedItems"));
+                homeVM.setFilteredList(null, homeVM.getFilterStartDate(),
+                        homeVM.getFilterEndDate(),
+                        homeVM.getFilterCheckedItems());
                 eventListAdapter.updateData(homeVM.getFilteredList());
                 list.scrollToPosition(0);
             }
         });
 
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                hideSearchView();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
         return view;
     }
 
-    public boolean hideSearchView() {
+    public void hideSearchView() {
         if(searchView.getVisibility() == View.VISIBLE) {
             linearLayout.setVisibility(View.VISIBLE);
             searchView.setVisibility(View.GONE);
-            return true;
         }
-        return false;
     }
 }

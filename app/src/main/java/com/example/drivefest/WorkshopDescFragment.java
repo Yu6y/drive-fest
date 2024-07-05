@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -79,46 +80,40 @@ public class WorkshopDescFragment extends Fragment {
         return view;
     }
 
-       /* @Override
-        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-            AppCompatActivity activity = (AppCompatActivity) getActivity();
-            if (activity != null && activity.getSupportActionBar() != null) {
-                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null && activity.getSupportActionBar() != null) {
+            ((HomeActivity) activity).setupDrawerToggle(true);
 
-                Toolbar toolbar = activity.findViewById(R.id.toolbar);
-                if (toolbar != null) {
-                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            getActivity().onBackPressed();
-                        }
-                    });
-                }
-
-                DrawerLayout drawerLayout = activity.findViewById(R.id.home_drawer);
-                if (drawerLayout != null) {
-                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                }
+            Toolbar toolbar = activity.findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setNavigationOnClickListener(v -> close());
             }
         }
+    }
 
-        @Override
-        public void onDestroyView() {
-            super.onDestroyView();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ((HomeActivity) activity).setupDrawerToggle(false);
+        }
+    }
 
-            AppCompatActivity activity = (AppCompatActivity) getActivity();
-            if (activity != null && activity.getSupportActionBar() != null) {
-                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                activity.getSupportActionBar().setDisplayShowHomeEnabled(false);
-
-                DrawerLayout drawerLayout = activity.findViewById(R.id.home_drawer);
-                if (drawerLayout != null) {
-                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                }
-            }
-        }*/
+    public void close() {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("workshopDesc");
+        if (fragment != null) {
+            fragmentManager
+                    .beginTransaction()
+                    .hide(fragment)
+                    .commit();
+            fragmentManager.popBackStack();
+        }
+    }
 
     }

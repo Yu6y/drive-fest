@@ -19,6 +19,7 @@
     import androidx.core.view.GravityCompat;
     import androidx.drawerlayout.widget.DrawerLayout;
     import androidx.fragment.app.Fragment;
+    import androidx.fragment.app.FragmentManager;
     import androidx.lifecycle.Observer;
     import androidx.lifecycle.ViewModelProvider;
 
@@ -116,21 +117,11 @@
 
             AppCompatActivity activity = (AppCompatActivity) getActivity();
             if (activity != null && activity.getSupportActionBar() != null) {
-                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                ((HomeActivity) activity).setupDrawerToggle(true);
 
                 Toolbar toolbar = activity.findViewById(R.id.toolbar);
                 if (toolbar != null) {
-                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            close();
-                        }
-                    });
-                }
-
-                DrawerLayout drawerLayout = activity.findViewById(R.id.home_drawer);
-                if (drawerLayout != null) {
-                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                    toolbar.setNavigationOnClickListener(v -> close());
                 }
             }
         }
@@ -138,26 +129,19 @@
         @Override
         public void onDestroyView() {
             super.onDestroyView();
-
             AppCompatActivity activity = (AppCompatActivity) getActivity();
-            if (activity != null && activity.getSupportActionBar() != null) {
-                DrawerLayout drawerLayout = activity.findViewById(R.id.home_drawer);
-                if (drawerLayout != null) {
-                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                }
-                ((HomeActivity) activity).setupDrawerToggle();
+            if (activity != null) {
+                ((HomeActivity) activity).setupDrawerToggle(false);
             }
         }
 
-
-
-        public void close(){
-            Fragment fragment = getParentFragmentManager().findFragmentByTag("descFragment");
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .hide(fragment)
-                    .commit();
-            getParentFragmentManager().popBackStack();
+        public void close() {
+            FragmentManager fragmentManager = getParentFragmentManager();
+            Fragment fragment = fragmentManager.findFragmentByTag("descFragment");
+            if (fragment != null) {
+                fragmentManager.beginTransaction().hide(fragment).commit();
+                fragmentManager.popBackStack();
+            }
         }
 
     }

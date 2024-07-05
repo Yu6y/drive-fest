@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -17,6 +18,7 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.drivefest.viewmodel.HomeViewModel;
@@ -37,6 +39,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle toggle;
     private Toolbar toolbar;
     private NavigationView navigationView;
+    private boolean mToolBarNavigationListenerIsRegistered = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,12 +91,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         if(menuItem.getItemId() == R.id.nav_events)
-            drawerLayout.closeDrawer(GravityCompat.START);
+            ;
         if(R.id.nav_followed == menuItem.getItemId()) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new FavoritesFragment(), "favoriteFragment").commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, new FavoritesFragment(), "favoriteFragment")
+                    .addToBackStack("favorites")
+                    .commit();
         }
         else if(R.id.nav_workshop == menuItem.getItemId()) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new WorkshopsFragment(), "workshopsFragment").commit();
+            homeVM.fetchWorkshopsList();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, new WorkshopsFragment(), "workshopsFragment")
+                    .addToBackStack("workshops")
+                    .commit();
         }
         else if(R.id.nav_workshop == menuItem.getItemId()) {
             //getSupportFragmentManager().beginTransaction().replace(R.id.fragmet_container, new CosFragment()).commit();
@@ -103,46 +115,51 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         //przy add fragment ise zapamietuje a przy replace jest niszczony
         //zrobic sprawdzenie fragmentu
         //nie dzilaa w searchview przez hide w sort
-       /*
-        EventsFragment eventsFragment = (EventsFragment) getSupportFragmentManager()
+/*
+        Fragment fragment = getSupportFragmentManager()
                 .findFragmentById(R.id.container);
-       /* if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0)
             getSupportFragmentManager().popBackStack();
-        elseif (eventsFragment != null && eventsFragment.hideSearchView()) {
-            return;
-        }
-        else if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }*/
+        else if (fragment != null) {
+            if (fragment instanceof EventsFragment) {
+                EventsFragment fr = (EventsFragment) fragment;
+                fr.hideSearchView();
+                return;
+            } else if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
+
+        }-//**/
         super.onBackPressed();
     }
-    public void setupDrawerToggle() {
-
-        setSupportActionBar(toolbar);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        //toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar, R.string.open,
-         //       R.string.close);
-        drawerLayout.addDrawerListener(toggle);
-        //toggle.setDrawerIndicatorEnabled(true);
-        toggle.syncState();
-
-
-      /*  setSupportActionBar(toolbar);
-
-        navigationView.setNavigationItemSelectedListener(this);
-
-
+    public void setupDrawerToggle(boolean val) {
         toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar, R.string.open,
                 R.string.close);
         drawerLayout.addDrawerListener(toggle);
         //toggle.setDrawerIndicatorEnabled(true);
-        toggle.syncState();*/
+        toggle.syncState();
+        if (val) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            toggle.setDrawerIndicatorEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+                toggle.setToolbarNavigationClickListener(v -> onBackPressed());
+
+
+        } else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            toggle.setDrawerIndicatorEnabled(true);
+            toggle.setToolbarNavigationClickListener(null);
+            toggle.syncState();
+
+        }
+
     }
 }

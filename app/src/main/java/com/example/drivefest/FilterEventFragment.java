@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -61,43 +63,30 @@ public class FilterEventFragment extends Fragment {
                clear();
         });
 
-        synchronizeCheckboxStates();
-        return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("startDate", String.valueOf(startDateEditText.getText()));
-        outState.putString("endDate", String.valueOf(endDateEditText.getText()));
-        outState.putSerializable("checkedItems", (Serializable) expandableListAdapter.getCheckedBoxes());
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null) {
-            String startDate = savedInstanceState.getString("startDate");
-            String endDate = savedInstanceState.getString("endDate");
-            //HashMap<String, List<String>> checkedItems = (HashMap<String, List<String>>)
-              //      savedInstanceState.getSerializable("checkedItems");
+        if (getArguments() != null) {
+            String startDate = getArguments().getString("startDate");
+            String endDate = getArguments().getString("endDate");
+            HashMap<String, List<String>> checkedItems = (HashMap<String, List<String>>)
+                  getArguments().getSerializable("checkedItems");
 
             if(!startDate.isEmpty())
                 startDateEditText.setText(startDate);
             if(!endDate.isEmpty())
                 endDateEditText.setText(endDate);
             Set<String> checkBoxesItems = new HashSet<>();
-            for(String key: checkedBoxes.keySet()){
-                for(String elem: checkedBoxes.get(key)){
+            for(String key: checkedItems.keySet()){
+                for(String elem: checkedItems.get(key)){
                     checkBoxesItems.add(elem);
                 }
             }
 
             expandableListAdapter.updateCheckedSet(checkBoxesItems);
             expandableListAdapter.notifyDataSetChanged();
+            synchronizeCheckboxStates();
         }
 
-        synchronizeCheckboxStates();
+
+        return view;
     }
 
     private void synchronizeCheckboxStates() {
@@ -174,16 +163,46 @@ public class FilterEventFragment extends Fragment {
 
             bundle.putSerializable("checkedItems", (Serializable) expandableListAdapter.getCheckedBoxes());
 
-            getParentFragmentManager().setFragmentResult("filterResult", bundle);
             FragmentManager fragmentManager = getParentFragmentManager();
-            Fragment fragment = fragmentManager.findFragmentByTag("eventsFragment");
-
-            fragment.setArguments(bundle);
+            fragmentManager.setFragmentResult("filterResult", bundle);
+            Fragment fragment = fragmentManager.findFragmentByTag("filterFragment");
             fragmentManager
                     .beginTransaction()
-                    .hide(this)
-                    .show(fragment)
+                    .hide(fragment)
                     .commit();
+            fragmentManager.popBackStack();
+        }
+    }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null && activity.getSupportActionBar() != null) {
+            ((HomeActivity) activity).setupDrawerToggle(true);
+
+            Toolbar toolbar = activity.findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setNavigationOnClickListener(v -> close());
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ((HomeActivity) activity).setupDrawerToggle(false);
+        }
+    }
+
+    public void close() {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("filterFragment");
+        if (fragment != null) {
+            fragmentManager.beginTransaction().hide(fragment).commit();
+            fragmentManager.popBackStack();
         }
     }
 }

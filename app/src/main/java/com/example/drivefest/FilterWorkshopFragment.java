@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -52,8 +54,24 @@ public class FilterWorkshopFragment extends Fragment {
         clearBtn.setOnClickListener(v -> {
             clear();
         });
+        if (getArguments() != null) {
+                radioGroup.check(getArguments().getInt("rate"));
+            HashMap<String, List<String>> checkedItems = (HashMap<String, List<String>>)
+                    getArguments().getSerializable("checkedItems");
 
-        synchronizeCheckboxStates();
+
+            Set<String> checkBoxesItems = new HashSet<>();
+            for(String key: checkedItems.keySet()){
+                for(String elem: checkedItems.get(key)){
+                    checkBoxesItems.add(elem);
+                }
+            }
+
+            expandableListAdapter.updateCheckedSet(checkBoxesItems);
+            expandableListAdapter.notifyDataSetChanged();
+            synchronizeCheckboxStates();
+        }
+
         return view;
     }
     private void synchronizeCheckboxStates() {
@@ -80,48 +98,51 @@ public class FilterWorkshopFragment extends Fragment {
         Bundle bundle = new Bundle();
         RadioButton button = getView().findViewById(radioGroup.getCheckedRadioButtonId());
 
-        bundle.putString("rate", getResources().getResourceEntryName(button.getId()));
+        bundle.putInt("rate", button.getId());
         bundle.putSerializable("checkedItems", (Serializable) expandableListAdapter.getCheckedBoxes());
 
-        getParentFragmentManager().setFragmentResult("filterWorkshopResult", bundle);
         FragmentManager fragmentManager = getParentFragmentManager();
+        fragmentManager.setFragmentResult("filterWorkshopResult", bundle);
         Fragment fragment = fragmentManager.findFragmentByTag("workshopsFragment");
 
-        fragment.setArguments(bundle);
         fragmentManager
                 .beginTransaction()
-                .hide(this)
-                .show(fragment)
+                .hide(fragment)
                 .commit();
-    }
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("selectedButton", radioGroup.getCheckedRadioButtonId());
-        outState.putSerializable("checkedItems", (Serializable) expandableListAdapter.getCheckedBoxes());
+        fragmentManager.popBackStack();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null) {
 
-            int selectedRadioButtonId = savedInstanceState.getInt("selectedButton", -1);
-            if (selectedRadioButtonId != -1) {
-                radioGroup.check(selectedRadioButtonId);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null && activity.getSupportActionBar() != null) {
+            ((HomeActivity) activity).setupDrawerToggle(true);
+
+            Toolbar toolbar = activity.findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setNavigationOnClickListener(v -> close());
             }
-
-            Set<String> checkBoxesItems = new HashSet<>();
-            for(String key: checkedBoxes.keySet()){
-                for(String elem: checkedBoxes.get(key)){
-                    checkBoxesItems.add(elem);
-                }
-            }
-
-            expandableListAdapter.updateCheckedSet(checkBoxesItems);
-            expandableListAdapter.notifyDataSetChanged();
         }
-
-        synchronizeCheckboxStates();
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ((HomeActivity) activity).setupDrawerToggle(false);
+        }
+    }
+
+    public void close() {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag("filterWorkshopFragment");
+        if (fragment != null) {
+            fragmentManager.beginTransaction().hide(fragment).commit();
+            fragmentManager.popBackStack();
+        }
+    }
+
 }
