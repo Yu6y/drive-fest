@@ -51,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     public void textSingUpActivityClick(View view){
         Intent intent = new Intent(this, SignupActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void logInBtnClick(View view){
@@ -67,8 +68,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onChanged(HashMap<Boolean, String> response) {
                 Toast.makeText(LoginActivity.this, response.get(response.keySet().iterator().next()).toString(), Toast.LENGTH_SHORT).show();
-                if(response.keySet().iterator().next().toString() == "true")
+                if (response.keySet().iterator().next().toString() == "true"){
                     startActivity(intent);
+                finish();
+            }
             }
 
         });

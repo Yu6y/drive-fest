@@ -2,7 +2,9 @@ package com.example.drivefest;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -23,7 +25,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.drivefest.viewmodel.HomeViewModel;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +84,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         homeVM.fetchEventShortList();
         homeVM.fetchFavEventShortList();
 
-
+        //homeVM.updateUserProfile("Nazwa testowa", "https://firebasestorage.googleapis.com/v0/b/moto-event.appspot.com/o/images%2Fusers%2Fdefault.jpg?alt=media&token=98a3e130-f318-4581-9a71-21fa18755eba");
+        Log.e("deeegbbubbug", homeVM.getUsername());
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -86,6 +93,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .addToBackStack(null)
                     .commit();
         }
+
     }
 
     @Override
@@ -101,6 +109,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         else if(R.id.nav_workshop == menuItem.getItemId()) {
             homeVM.fetchWorkshopsList();
+            homeVM.fetchRatedWorkshops();
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, new WorkshopsFragment(), "workshopsFragment")
@@ -129,14 +138,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 EventsFragment fr = (EventsFragment) fragment;
                 fr.hideSearchView();
                 return;
-            } else if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else {
-                super.onBackPressed();
-            }
-
-        }-//**/
-        super.onBackPressed();
+            } else*/
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
     public void setupDrawerToggle(boolean val) {
         toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar, R.string.open,

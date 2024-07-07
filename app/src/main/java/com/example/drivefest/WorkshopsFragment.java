@@ -82,8 +82,13 @@ public class WorkshopsFragment extends Fragment {
         list.setAdapter(workshopListAdapter);
 
         homeVM.getWorkshopsLiveData().observe(getViewLifecycleOwner(), workshops -> {
-            Log.e("cos", "nietego");
+
             workshopListAdapter.updateData(workshops);
+            homeVM.getRatedWorkshop().observe(getViewLifecycleOwner(), ratedWorkshops -> {
+                Log.e("cos", "kurwawaaaaaaaaaaaa");
+                homeVM.setRatedWorkshops();
+                workshopListAdapter.notifyDataSetChanged();
+            });
         });
 
         linearLayout = view.findViewById(R.id.workshopbtnLayout);

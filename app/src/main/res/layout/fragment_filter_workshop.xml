@@ -29,6 +29,13 @@
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/from1"
+                android:text="Od 1 i wyżej"
+                android:textSize="16dp"
+                />
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/from2"
                 android:text="Od 2 i wyżej"
                 android:textSize="16dp"

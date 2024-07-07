@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatRatingBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -12,12 +13,16 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -28,10 +33,12 @@ import com.example.drivefest.viewmodel.HomeViewModel;
 
 public class WorkshopDescFragment extends Fragment {
     private EventDescViewModel eventVM;
-    private TextView title, text, address, tags, rating;
+    private TextView title, text, address, tags, rating, ratingCount;
     private ImageView image;
     private Workshop workshop;
     private HomeViewModel homeVM;
+    private AppCompatRatingBar ratingBar;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,7 +52,12 @@ public class WorkshopDescFragment extends Fragment {
         address = view.findViewById(R.id.workshopDesc_address);
         tags = view.findViewById(R.id.workshopDesc_tags);
         rating = view.findViewById(R.id.workshopDesc_rating);
+        ratingCount = view.findViewById(R.id.workshopDesc_rating_count);
         image = view.findViewById(R.id.workshopDesc_image);
+        ratingBar = view.findViewById(R.id.eventDesc_btn_rate);
+
+        /*ratingBar.setRating(0);
+        ratingBar.setEnabled(true);*/
 
         homeVM.updateWorkshopDesc(workshop);
 
@@ -66,7 +78,15 @@ public class WorkshopDescFragment extends Fragment {
                     }
                     tags.setText(tag);
                     rating.setText("Ocena: " + workshopDesc.getRating());
+                    ratingCount.setText("Ocen: " + workshopDesc.getRatingCount());
 
+
+                    if(workshopDesc.isRated()){
+                        Log.e("rating bar", "kurwa jego mac");
+                        ratingBar.setRating(workshopDesc.getRate());
+                        Log.e("no ja pierdole", String.valueOf(workshopDesc.getRate()));
+                        ratingBar.setEnabled(false);
+                    }
                     Glide
                             .with(getContext())
                             .load(workshopDesc.getImage())
@@ -77,6 +97,16 @@ public class WorkshopDescFragment extends Fragment {
                 }
             }
         });
+
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                Toast.makeText(getContext(), String.valueOf(ratingBar.getRating()), Toast.LENGTH_SHORT).show();
+
+                ratingBar.setEnabled(false);
+            }
+        });
+
         return view;
     }
 
@@ -115,5 +145,10 @@ public class WorkshopDescFragment extends Fragment {
             fragmentManager.popBackStack();
         }
     }
-
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.e("on", "detach");
+        homeVM.clearWorkshopDesc();
     }
+}

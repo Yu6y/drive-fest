@@ -54,6 +54,7 @@ public class WorkshopListAdapter extends RecyclerView.Adapter<WorkshopListViewHo
         }
         holder.tags.setText(tag);
         holder.city.setText(list.get(position).getLocation());
+        holder.rating.setText(String.valueOf(list.get(position).getRating()));
         Glide
                 .with(context)
                 .load(list.get(position).getImage())
@@ -120,7 +121,7 @@ public class WorkshopListAdapter extends RecyclerView.Adapter<WorkshopListViewHo
 }
 class WorkshopListViewHolder extends RecyclerView.ViewHolder{
     CardView listElem;
-    TextView title, city, tags;
+    TextView title, city, tags, rating;
     ImageView picture;
 
 
@@ -131,5 +132,6 @@ class WorkshopListViewHolder extends RecyclerView.ViewHolder{
         tags = itemView.findViewById(R.id.workshop_tags);
         picture = itemView.findViewById(R.id.workshop_image);
         listElem = itemView.findViewById(R.id.workshop_list_elem);
+        rating = itemView.findViewById(R.id.workshop_rating);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.drivefest.data.repository;
 
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,13 +10,16 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.drivefest.LoginActivity;
 import com.example.drivefest.SignupActivity;
+import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class FirebaseAuthRepository {
     private static final FirebaseAuthRepository instanceAuth = new FirebaseAuthRepository();
@@ -51,30 +55,30 @@ public class FirebaseAuthRepository {
         return response;
     }
 
-    public MutableLiveData<HashMap<Integer, String>> signUpUser(String mail, String password){
-        final MutableLiveData<HashMap<Integer, String>> response = new MutableLiveData<>();
-
+    public void signUpUser(String mail, String password, DatabaseDataCallback callback){
+        List<HashMap<Integer, String>> response = new ArrayList<>();
         mAuth.createUserWithEmailAndPassword(mail, password)
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        Integer a = 1;
-                        response.setValue(new HashMap<Integer, String>(){
+
+                        response.add(new HashMap<Integer, String>(){
                             {
                                 put(0, "Success login.");
                             }});
+                        callback.OnSuccess(response);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        response.setValue(new HashMap<Integer, String>(){
+                        response.add(new HashMap<Integer, String>(){
                             {
-                                put(1, e.getMessage());
+                                put(1, "Success login.");
                             }});
+                        callback.OnFail(e.toString());
                     }
                 });
-
-        return response;
     }
 
     public String getCurrentUserId() {
@@ -84,5 +88,13 @@ public class FirebaseAuthRepository {
         } else {
             return null;
         }
+    }
+
+    public FirebaseUser getCurrentUser(){
+        return mAuth.getCurrentUser();
+    }
+
+    public Uri getUser(){
+        return mAuth.getCurrentUser().getPhotoUrl();
     }
 }

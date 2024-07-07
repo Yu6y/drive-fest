@@ -44,8 +44,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
-                    android:text="Miasto"
+                    android:text="Piotrkow Trybunalski"
                     android:padding="7dp"
+                    android:maxLines="1"
                     android:drawablePadding="3dp"
                     android:textSize="16dp"
 
@@ -66,10 +67,23 @@
                     android:freezesText="true"
                     />
             </LinearLayout>
-
-
-
+                <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="0.5"
+                android:layout_gravity="center">
+                    <TextView
+                        android:id="@+id/workshop_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3.0"
+                        android:textSize="50dp"
+                        android:layout_gravity="right"
+                        android:drawableRight="@drawable/ic_star"
+                        />
         </LinearLayout>
 
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

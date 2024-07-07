@@ -11,9 +11,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.lang.reflect.Array;
 import java.net.StandardProtocolFamily;
@@ -66,6 +68,51 @@ public class FirebaseStorageRepository {
             }
         });
     }
+//zmiana
+public void updatePhoto(Uri photo, StorageUrlCallback callback) {
+    // Get the reference to the desired directory
+    StorageReference imagesRef = storageRef.child("images/users/");
+
+    if (photo == null) {
+        Log.e("storage", "null");
+        StorageReference defaultImageRef = imagesRef.child("default.jpg");
+        defaultImageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.e("success", uri.toString());
+                callback.onUrlReceived(uri.toString());
+            }
+        });
+    } else {
+        Log.e("storage", "notnull");
+        StorageReference userImageRef = imagesRef.child(photo.getLastPathSegment());
+        userImageRef.putFile(photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                userImageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Log.e("upload success", uri.toString());
+                        callback.onUrlReceived(uri.toString());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("fail", e.getMessage());
+                        callback.onUrlReceived("");
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("upload fail", e.getMessage());
+                callback.onUrlReceived("");
+            }
+        });
+    }
+
+}
 
 }
 

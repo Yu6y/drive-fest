@@ -1,12 +1,16 @@
 package com.example.drivefest.viewmodel;
 
+import android.net.Uri;
+import android.provider.Telephony;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.drivefest.data.model.Event;
 import com.example.drivefest.data.model.EventShort;
+import com.example.drivefest.data.model.RatedWorkshop;
 import com.example.drivefest.data.model.Workshop;
 import com.example.drivefest.data.model.WorkshopDesc;
 import com.example.drivefest.data.repository.FirebaseAuthRepository;
@@ -14,6 +18,10 @@ import com.example.drivefest.data.repository.FirebaseFirestoreRepository;
 import com.example.drivefest.data.repository.FirebaseStorageRepository;
 import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.example.drivefest.data.repository.callback.StorageUrlCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,6 +46,7 @@ public class HomeViewModel extends ViewModel {
     private int sortWorkshop;
     private int rateWorkshop;
     private HashMap<String, List<String>> filterCheckedItemsWorkshop;
+    private MutableLiveData<List<RatedWorkshop>> ratedWorkshop;
     private String userId;
     public HomeViewModel(){
         mDb = FirebaseFirestoreRepository.getDbInstance();
@@ -46,7 +55,7 @@ public class HomeViewModel extends ViewModel {
         eventShortListLiveData = new MutableLiveData<>();
         eventShortFiltered = new ArrayList<>();
         favEventShortLiveData = new MutableLiveData<>();
-        //userId = mAuth.getCurrentUserId();
+        userId = mAuth.getCurrentUserId();
         workshopsLiveData = new MutableLiveData<>();
         workshopsFiltered = new ArrayList<>();
         workshopDesc = new MutableLiveData<>();
@@ -56,6 +65,7 @@ public class HomeViewModel extends ViewModel {
         filterCheckedItems = null;
         sortWorkshop = -1;
         filterCheckedItemsWorkshop = null;
+        ratedWorkshop = new MutableLiveData<>();
     }
 
     public void fetchEventShortList(){
@@ -300,6 +310,9 @@ public class HomeViewModel extends ViewModel {
         else{
             float rate;
             switch(rating){
+                case "from1":
+                    rate = 1;
+                    break;
                 case "from2":
                     rate = 2;
                     break;
@@ -313,7 +326,7 @@ public class HomeViewModel extends ViewModel {
                     rate = 5;
                     break;
                 case "allrates":
-                    rate = 1;
+                    rate = 0;
                     break;
                 default:
                     rate = 0;
@@ -339,7 +352,7 @@ public class HomeViewModel extends ViewModel {
         return workshopsFiltered;
     }
 
-    public void updateWorkshopDesc(Workshop workshop){
+    public void updateWorkshopDesc(Workshop workshop) {
         workshopDesc.postValue(new WorkshopDesc(workshop));
         mDb.getWorkshopDesc(workshop.getId(), new DatabaseDataCallback() {
             @Override
@@ -353,10 +366,10 @@ public class HomeViewModel extends ViewModel {
             }
         });
     }
-    private void updateWorkshopDescription(Map<String, Object> map){
+    private void updateWorkshopDescription(Map<String, Object> map) {
         WorkshopDesc temp = workshopDesc.getValue();
-        temp.setDescription((String)map.get("description"));
-        temp.setAddress((String)map.get("address"));
+        temp.setDescription((String) map.get("description"));
+        temp.setAddress((String) map.get("address"));
         workshopDesc.postValue(temp);
     }
     public MutableLiveData<WorkshopDesc> getWorkshopDesc(){
@@ -399,5 +412,86 @@ public class HomeViewModel extends ViewModel {
     }
     public HashMap<String, List<String>> getFilterCheckedItemsWorkshop(){
         return filterCheckedItemsWorkshop;
+    }
+
+    public MutableLiveData<List<RatedWorkshop>> getRatedWorkshop(){
+       return ratedWorkshop;
+    }
+
+    public void fetchRatedWorkshops(){
+
+        mDb.getWorkshopRate(userId, new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> list) {
+                List<RatedWorkshop> listTemp = new ArrayList<>();
+                int[] fetchCount = {0};
+                int totalCount = list.size();
+
+                for(Object obj : list) {
+                    if (obj instanceof RatedWorkshop) {
+                        RatedWorkshop ratedWorkshop = (RatedWorkshop) obj;
+                        listTemp.add(ratedWorkshop);
+
+                        fetchCount[0]++;
+                        checkAndUpdateRatedWorkshops(fetchCount[0], totalCount, listTemp);
+                    }
+                }
+            }
+
+            @Override
+            public void OnFail(String response){
+                Log.d("response", response);
+            }
+        });
+    }
+
+    private void checkAndUpdateRatedWorkshops(int currentCount, int totalCount, List<RatedWorkshop> listTemp) {
+        if (currentCount == totalCount) {
+            ratedWorkshop.postValue(listTemp);
+        }
+    }
+
+    public void setRatedWorkshops(){
+        Log.e("rated", "workshops");
+        Log.e("Tu sie", "wypierdala");
+        for(RatedWorkshop rated : ratedWorkshop.getValue()){
+            for(Workshop workshop: workshopsLiveData.getValue()){
+                Log.e("porownanie", workshop.getId() + " _ " + rated.getWorkshopId());
+                if(rated.getWorkshopId().equals(workshop.getId())){
+                    workshop.setRated(rated.getRate());
+                    break;
+                }
+            }
+        }
+        for(Workshop t : getWorkshopsLiveData().getValue())
+            Log.e("debug follow", String.valueOf(t.isRated()));
+    }
+
+    public void clearWorkshopDesc(){
+        workshopDesc = new MutableLiveData<>();
+    }
+
+    public String getUsername(){
+            return mAuth.getUser().toString();
+    }
+    public void updateUserProfile(String name, String url) {
+        UserProfileChangeRequest updateProfile = new UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .setPhotoUri(Uri.parse(url))
+                .build();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            user.updateProfile(updateProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.e("complete", "Profile updated successfully.");
+                    } else {
+                        Log.e("complete", "Profile update failed.");
+                    }
+                }
+            });
+            Log.e("urlphoto", user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "No photo URL");
+        }
     }
 }

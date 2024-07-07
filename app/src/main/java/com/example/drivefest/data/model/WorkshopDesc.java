@@ -21,7 +21,10 @@ public class WorkshopDesc extends Workshop{
                 workshop.getLocation(),
                 workshop.getRating(),
                 workshop.getTags(),
-                workshop.getVoivodeship());
+                workshop.getVoivodeship(),
+                workshop.getRatingCount(),
+                workshop.isRated(),
+                workshop.getRate());
         this.address = address;
         this.description = description;
         this.locationCords = location;
@@ -50,7 +53,6 @@ public class WorkshopDesc extends Workshop{
     public String getLocationCords() {
         return locationCords;
     }
-
     public WorkshopDesc(Workshop workshop){
         super(workshop.getId(),
                 workshop.getName(),
@@ -58,7 +60,10 @@ public class WorkshopDesc extends Workshop{
                 workshop.getLocation(),
                 workshop.getRating(),
                 workshop.getTags(),
-                workshop.getVoivodeship());
+                workshop.getVoivodeship(),
+                workshop.getRatingCount(),
+                workshop.isRated(),
+                workshop.getRate());
     }
 
 }

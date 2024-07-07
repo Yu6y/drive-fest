@@ -17,8 +17,14 @@ public class Workshop implements Parcelable{
     private String[] tags;
     private String voivodeship;
     private boolean rated;
+    private int ratingCount;
+    private int rate;
 
-    public Workshop(String id, String name, String image, String location, float rating, String[] tags, String voivodeship) {
+    public int getRate() {
+        return rate;
+    }
+
+    public Workshop(String id, String name, String image, String location, float rating, String[] tags, String voivodeship, int ratesCount, boolean rated, int rate) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -26,6 +32,9 @@ public class Workshop implements Parcelable{
         this.rating = rating;
         this.tags = tags;
         this.voivodeship = voivodeship;
+        this.ratingCount = ratesCount;
+        this.rated = rated;
+        this.rate = rate;
     }
     public Workshop(){
         this.id = null;
@@ -36,10 +45,13 @@ public class Workshop implements Parcelable{
         this.tags = null;
         this.voivodeship = null;
         this.rated = false;
+        this.ratingCount = 0;
+        this.rate = 0;
     }
 
-    public void setRated(boolean rated) {
-        this.rated = rated;
+    public void setRated(int rate) {
+        this.rated = true;
+        this.rate = rate;
     }
 
     public String getId() {
@@ -69,6 +81,9 @@ public class Workshop implements Parcelable{
     public String getVoivodeship() {
         return voivodeship;
     }
+    public int getRatingCount() {
+        return ratingCount;
+    }
 
     public boolean isRated() {
         return rated;
@@ -82,6 +97,7 @@ public class Workshop implements Parcelable{
         List<String> tagsList = (List<String>) document.get("tags");
         tags = tagsList.toArray(new String[0]);
         voivodeship = document.get("voivodeship").toString();
+        ratingCount = Integer.valueOf(document.get("ratesCount").toString());
     }
 
     @Override

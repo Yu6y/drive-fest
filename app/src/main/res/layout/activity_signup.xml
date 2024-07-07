@@ -12,13 +12,24 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="196dp"
+        android:layout_marginTop="120dp"
         android:padding="14dp"
-        android:text="Sign Up"
-        android:textSize="52dp"
+        android:text="Rejestracja"
         android:textColor="#413e3b"
+        android:textSize="52dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/user_photo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="230dp"
+        android:onClick="imageOnClick"
+        android:src="@drawable/userphoto"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,7 +37,7 @@
         android:id="@+id/signmail"
         android:layout_width="274dp"
         android:layout_height="53dp"
-        android:layout_marginTop="356dp"
+        android:layout_marginTop="372dp"
         android:background="@drawable/input_custom"
         android:drawableStart="@drawable/color_email"
         android:drawablePadding="8dp"
@@ -39,15 +50,31 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
+        android:id="@+id/signname"
+        android:layout_width="274dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="444dp"
+        android:background="@drawable/input_custom"
+        android:drawableStart="@drawable/ic_person_color"
+        android:drawablePadding="8dp"
+        android:ems="10"
+        android:hint="nazwa"
+        android:inputType="text"
+        android:paddingStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
         android:id="@+id/signpass"
         android:layout_width="274dp"
         android:layout_height="53dp"
-        android:layout_marginTop="436dp"
+        android:layout_marginTop="516dp"
         android:background="@drawable/input_custom"
         android:drawableStart="@drawable/color_lock"
         android:drawablePadding="8dp"
         android:ems="10"
-        android:hint="password"
+        android:hint="hasło"
         android:inputType="textPassword"
         android:paddingStart="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,24 +85,24 @@
         android:id="@+id/signbtn"
         android:layout_width="120dp"
         android:layout_height="48dp"
-        android:layout_marginTop="516dp"
+        android:layout_marginTop="600dp"
         android:background="@drawable/custom_button_click"
-        android:text="Sign Up"
+        android:onClick="signUpBtnClick"
+        android:text="Zarejestruj"
         android:textColor="#000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:onClick="signUpBtnClick"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/logintxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="584dp"
+        android:layout_marginTop="664dp"
         android:onClick="textLogInActivityClick"
-        android:text="Already have an account? Log In"
+        android:text="Posiadasz konto? Zaloguj się"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

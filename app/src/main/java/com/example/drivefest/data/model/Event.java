@@ -6,10 +6,12 @@ import java.util.Map;
 public class Event extends EventShort{
     private String description;
     private String locationCords;
+    private String address;
 
     public Event(){
         description = null;
         locationCords = null;
+        address = null;
     }
     public Event(EventShort eventShort){
         super(eventShort.getId(),
@@ -26,6 +28,7 @@ public class Event extends EventShort{
     public void setData(Map<String, Object> document){
         description = document.get("description").toString();
         locationCords = document.get("location").toString();
+        address = document.get("address").toString();
     }
 
     public String getDescription() {
@@ -42,5 +45,12 @@ public class Event extends EventShort{
 
     public void setLocationCords(String location) {
         this.locationCords = location;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
     }
 }

@@ -60,7 +60,7 @@
                     if (event != null) {
                         title.setText(event.getName());
                         text.setText(event.getDescription());
-                        city.setText(event.getLocation());
+                        city.setText(event.getLocation() + ", " + event.getAddress());
                         date.setText(event.getDate().toString());
                         Log.e("evenrtdsc", String.valueOf(event.getIsFollowed()));
                         if(event.getIsFollowed()){

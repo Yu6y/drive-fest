@@ -1,12 +1,11 @@
 package com.example.drivefest.data.repository;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.drivefest.data.model.Event;
 import com.example.drivefest.data.model.EventShort;
+import com.example.drivefest.data.model.RatedWorkshop;
 import com.example.drivefest.data.model.Workshop;
 import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,41 +26,42 @@ public class FirebaseFirestoreRepository {
     private static final FirebaseFirestoreRepository instanceDB = new FirebaseFirestoreRepository();
     private static FirebaseFirestore mDatabase;
 
-    private FirebaseFirestoreRepository(){
+    private FirebaseFirestoreRepository() {
         mDatabase = FirebaseFirestore.getInstance();
     }
-    public static FirebaseFirestoreRepository getDbInstance(){
+
+    public static FirebaseFirestoreRepository getDbInstance() {
         return instanceDB;
     }
 
-    public void getEventShort(DatabaseDataCallback callback){
-            mDatabase.collection("event_short")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                List<EventShort> eventList = new ArrayList<>();
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    EventShort event = new EventShort();
-                                    event.setData(document.getData(), document.getId());
-                                    eventList.add(event);
-                                    Log.d("success", document.getData().toString());
-                                    Log.d("count", String.valueOf(eventList.size()));
+    public void getEventShort(DatabaseDataCallback callback) {
+        mDatabase.collection("event_short")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<EventShort> eventList = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                EventShort event = new EventShort();
+                                event.setData(document.getData(), document.getId());
+                                eventList.add(event);
+                                Log.d("success", document.getData().toString());
+                                Log.d("count", String.valueOf(eventList.size()));
 
-                                }
-                                Log.d("coun2t", String.valueOf(eventList.size()));
-                                callback.OnSuccess(eventList);
-                            } else {
-                                Log.d("fail", task.getException().toString());
-                                callback.OnFail(task.getException().getMessage());
                             }
-
+                            Log.d("coun2t", String.valueOf(eventList.size()));
+                            callback.OnSuccess(eventList);
+                        } else {
+                            Log.d("fail", task.getException().toString());
+                            callback.OnFail(task.getException().getMessage());
                         }
-                    });
+
+                    }
+                });
     }
 
-    public void getEventDesc(String id, DatabaseDataCallback callback){
+    public void getEventDesc(String id, DatabaseDataCallback callback) {
         mDatabase.collection("event_short")
                 .document(id)
                 .collection("event_desc")
@@ -70,14 +70,13 @@ public class FirebaseFirestoreRepository {
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Map<String, Object> doc = task.getResult().getData();
                             Log.d("data", task.getResult().getData().toString());
                             List<Map<?, ?>> response = new ArrayList<>();
                             response.add(doc);
                             callback.OnSuccess(response);
-                        }
-                        else{
+                        } else {
                             Log.e("EventDesc", "Error");
                             callback.OnFail("Fail");
                         }
@@ -85,9 +84,9 @@ public class FirebaseFirestoreRepository {
                 });
     }
 
-    public void getFollowedEvents(String userId, DatabaseDataCallback callback){
+    public void getFollowedEvents(String userId, DatabaseDataCallback callback) {//"hR3XI705oabbMqILbDTE3MpHBl43"
         mDatabase.collection("fav_events")
-                .whereEqualTo("userId", "hR3XI705oabbMqILbDTE3MpHBl43")
+                .whereEqualTo("userId", userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -112,7 +111,7 @@ public class FirebaseFirestoreRepository {
                 });
     }
 
-    public void getWorkshops(DatabaseDataCallback callback){
+    public void getWorkshops(DatabaseDataCallback callback) {
         mDatabase.collection("workshops")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -139,7 +138,7 @@ public class FirebaseFirestoreRepository {
                 });
     }
 
-    public void getWorkshopDesc(String id, DatabaseDataCallback callback){
+    public void getWorkshopDesc(String id, DatabaseDataCallback callback) {
         mDatabase.collection("workshops")
                 .document(id)
                 .collection("workshop_desc")
@@ -148,19 +147,71 @@ public class FirebaseFirestoreRepository {
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Map<String, Object> doc = task.getResult().getData();
                             Log.d("data", task.getResult().getData().toString());
                             List<Map<?, ?>> response = new ArrayList<>();
                             response.add(doc);
                             callback.OnSuccess(response);
-                        }
-                        else{
+                        } else {
                             Log.e("WorkshopDesc", "Error");
                             callback.OnFail("Fail");
                         }
                     }
                 });
     }
+   /* public void getWorkshopRate(String userId, DatabaseDataCallback callback) {
+        mDatabase.collection("rated_workshops")
+                .whereEqualTo("userId", "hR3XI705oabbMqILbDTE3MpHBl43")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<RatedWorkshop> ratedWorkshops = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                RatedWorkshop ratedWorkshop = new RatedWorkshop();
+                                ratedWorkshop.setData(document.getData());
+                                ratedWorkshops.add(ratedWorkshop);
+                                Log.d("successfavortie", document.getData().toString());
+                                Log.d("countfav", String.valueOf(ratedWorkshops.size()));
 
+                            }
+                            Log.d("coun2tfav", String.valueOf(ratedWorkshops.size()));
+                            callback.OnSuccess(ratedWorkshops);
+                        } else {
+                            Log.d("failfav", task.getException().toString());
+                            callback.OnFail(task.getException().getMessage());
+                        }
+                    }
+                });
+    }*/
+
+    public void getWorkshopRate(String userId, DatabaseDataCallback callback) {//"hR3XI705oabbMqILbDTE3MpHBl43"
+        mDatabase.collection("rated_workshops")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<RatedWorkshop> ratedWorkshops = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                RatedWorkshop ratedWorkshop = new RatedWorkshop();
+                                ratedWorkshop.setData(document.getData());
+                                ratedWorkshops.add(ratedWorkshop);
+                                Log.d("successfavortie", document.getData().toString());
+                                Log.d("countfav", String.valueOf(ratedWorkshops.size()));
+
+                            }
+                            Log.d("coun2tfav", String.valueOf(ratedWorkshops.size()));
+                            callback.OnSuccess(ratedWorkshops);
+                        } else {
+                            Log.d("failfav", task.getException().toString());
+                            callback.OnFail(task.getException().getMessage());
+                        }
+                    }
+                });
+
+    }
 }
