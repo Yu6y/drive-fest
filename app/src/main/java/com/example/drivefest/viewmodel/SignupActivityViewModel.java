@@ -66,6 +66,7 @@ public class SignupActivityViewModel extends ViewModel {
                     public void onUrlReceived(String url) {
                         HashMap<String, String> data = new HashMap<>();
                         data.put("name", name);
+                        Log.e("VM", name);
                         data.put("uri", url);
                         Log.e("debug svm", url);
                         updateData.postValue(data);
@@ -77,6 +78,7 @@ public class SignupActivityViewModel extends ViewModel {
                // updateUserProfile(name, "https://firebasestorage.googleapis.com/v0/b/moto-event.appspot.com/o/images%2Fusers%2Fdefault.jpg?alt=media&token=98a3e130-f318-4581-9a71-21fa18755eba");
                 HashMap<String, String> data = new HashMap<>();
                 data.put("name", name);
+                Log.e("VM", name);
                 data.put("uri", "https://firebasestorage.googleapis.com/v0/b/moto-event.appspot.com/o/images%2Fusers%2Fdefault.jpg?alt=media&token=98a3e130-f318-4581-9a71-21fa18755eba");
                 Log.e("debug svm", "https://firebasestorage.googleapis.com/v0/b/moto-event.appspot.com/o/images%2Fusers%2Fdefault.jpg?alt=media&token=98a3e130-f318-4581-9a71-21fa18755eba");
                 updateData.postValue(data);
@@ -120,6 +122,7 @@ public void updateUserProfile(String name, String url) {
             .build();
     FirebaseUser user = mAuth.getCurrentUser();
     if (user != null) {
+        Log.e("update profile" , updateProfile.getDisplayName());
         user.updateProfile(updateProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

@@ -126,7 +126,7 @@ public class HomeViewModel extends ViewModel {
     public void setFilteredList(String filter, String startDate, String endDate, HashMap<String, List<String>> voivTags){
         List<EventShort> filteredList = new ArrayList<>();
         List<EventShort> currentList = eventShortListLiveData.getValue();
-
+        //poprawic
         if(startDate == null && endDate == null && voivTags == null) {
             if(!eventShortFiltered.isEmpty()) {
                 Log.e("fioilter", String.valueOf(currentList.size()));
@@ -471,27 +471,15 @@ public class HomeViewModel extends ViewModel {
         workshopDesc = new MutableLiveData<>();
     }
 
-    public String getUsername(){
-            return mAuth.getUser().toString();
+    public String getUserPic(){
+            return mAuth.getUserPhoto().toString();
     }
-    public void updateUserProfile(String name, String url) {
-        UserProfileChangeRequest updateProfile = new UserProfileChangeRequest.Builder()
-                .setDisplayName(name)
-                .setPhotoUri(Uri.parse(url))
-                .build();
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            user.updateProfile(updateProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.e("complete", "Profile updated successfully.");
-                    } else {
-                        Log.e("complete", "Profile update failed.");
-                    }
-                }
-            });
-            Log.e("urlphoto", user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "No photo URL");
-        }
+
+    public String getUserDisplayName(){
+        return mAuth.getUserName();
+    }
+
+    public String getUserId(){
+        return userId;
     }
 }

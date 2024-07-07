@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,6 +25,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.drivefest.viewmodel.HomeViewModel;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -84,8 +88,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         homeVM.fetchEventShortList();
         homeVM.fetchFavEventShortList();
 
-        //homeVM.updateUserProfile("Nazwa testowa", "https://firebasestorage.googleapis.com/v0/b/moto-event.appspot.com/o/images%2Fusers%2Fdefault.jpg?alt=media&token=98a3e130-f318-4581-9a71-21fa18755eba");
-        Log.e("deeegbbubbug", homeVM.getUsername());
+        Log.e("deeegbbubbug", homeVM.getUserDisplayName());
+        Log.e("deeeebuug", homeVM.getUserPic());
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -93,7 +97,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .addToBackStack(null)
                     .commit();
         }
-
+        updateNav();
     }
 
     @Override
@@ -167,6 +171,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             toggle.syncState();
 
         }
+    }
 
+    private void updateNav(){
+        NavigationView nav = findViewById(R.id.nav_view);
+        View header = nav.getHeaderView(0);
+        TextView name = header.findViewById(R.id.nav_name);
+        ImageView image = header.findViewById(R.id.nav_image);
+
+        name.setText(homeVM.getUserDisplayName());
+        Glide
+                .with(this)
+                .load(homeVM.getUserPic())
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                .placeholder(R.drawable.ic_cloud_download)
+                .error(R.drawable.ic_error)
+                .into(image);
     }
 }

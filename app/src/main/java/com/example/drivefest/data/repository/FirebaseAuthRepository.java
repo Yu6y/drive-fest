@@ -94,7 +94,12 @@ public class FirebaseAuthRepository {
         return mAuth.getCurrentUser();
     }
 
-    public Uri getUser(){
+    public Uri getUserPhoto(){
         return mAuth.getCurrentUser().getPhotoUrl();
     }
+
+    public String getUserName(){
+        return mAuth.getCurrentUser().getDisplayName();
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.example.drivefest.data.model;
 
+import android.util.Log;
+
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ public class Event extends EventShort{
         description = document.get("description").toString();
         locationCords = document.get("location").toString();
         address = document.get("address").toString();
+        Log.e("adders event", address);
     }
 
     public String getDescription() {

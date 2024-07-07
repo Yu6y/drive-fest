@@ -4,11 +4,14 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.drivefest.data.model.Comment;
 import com.example.drivefest.data.model.EventShort;
 import com.example.drivefest.data.model.RatedWorkshop;
 import com.example.drivefest.data.model.Workshop;
 import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -213,5 +216,59 @@ public class FirebaseFirestoreRepository {
                     }
                 });
 
+    }
+
+    public void postComment(String id, Map<String, Object> map, DatabaseDataCallback callback){
+        mDatabase.collection("event_short")
+                .document(id)
+                .collection("event_desc")
+                .document("0")
+                .collection("comments")
+                .add(map)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        List<String> text = new ArrayList<>();
+                        text.add("Comment added!");
+                        callback.OnSuccess(text);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.OnFail(e.getMessage());
+                    }
+                });
+    }
+
+    public void fetchCommentsList(String id, DatabaseDataCallback callback) {
+        mDatabase.collection("event_short")
+                .document(id)
+                .collection("event_desc")
+                .document("0")
+                .collection("comments")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<Comment> commentsList = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Comment comment = new Comment();
+                                comment.setData(document.getData());
+                                commentsList.add(comment);
+                                Log.d("success", document.getData().toString());
+                                Log.d("count", String.valueOf(commentsList.size()));
+
+                            }
+                            Log.d("coun2t", String.valueOf(commentsList.size()));
+                            callback.OnSuccess(commentsList);
+                        } else {
+                            Log.d("fail", task.getException().toString());
+                            callback.OnFail(task.getException().getMessage());
+                        }
+
+                    }
+                });
     }
 }

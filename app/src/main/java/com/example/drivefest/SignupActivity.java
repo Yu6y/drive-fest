@@ -79,7 +79,9 @@ public class SignupActivity extends AppCompatActivity {
                         mSignupVM.getUpdateData().observe(SignupActivity.this, new Observer<HashMap<String, String>>() {
                             @Override
                             public void onChanged(HashMap<String, String> stringStringHashMap) {
+                                Log.e("name",stringStringHashMap.get("name") );
                                 mSignupVM.updateUserProfile(stringStringHashMap.get("name"), stringStringHashMap.get("uri"));
+
                             }
                         });
                         startActivity(intent);
@@ -88,7 +90,7 @@ public class SignupActivity extends AppCompatActivity {
                         Toast.makeText(SignupActivity.this, "Success login", Toast.LENGTH_SHORT).show();
                         break;
                     case 2:
-                        email.setError("");
+                        email.setError("Bad email");
                         break;
                     case 3:
                         password.setError("At least 5 letters");
