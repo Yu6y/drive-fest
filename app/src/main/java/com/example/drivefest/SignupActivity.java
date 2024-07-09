@@ -65,6 +65,7 @@ public class SignupActivity extends AppCompatActivity {
 
     public void signUpBtnClick(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         String mailStr = email.getText().toString().trim();
         String nameStr = name.getText().toString().trim();
         String passwordStr = password.getText().toString().trim();
@@ -112,6 +113,7 @@ public class SignupActivity extends AppCompatActivity {
 
     public void textLogInActivityClick(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }

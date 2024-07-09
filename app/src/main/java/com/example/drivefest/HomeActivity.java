@@ -1,6 +1,8 @@
 package com.example.drivefest;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
@@ -50,6 +52,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private NavigationView navigationView;
     private boolean mToolBarNavigationListenerIsRegistered = false;
+    // creating constant keys for shared preferences.
+    private final String SHARED_PREFS = "shared_prefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +130,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         else if(R.id.nav_workshop == menuItem.getItemId()) {
             //getSupportFragmentManager().beginTransaction().replace(R.id.fragmet_container, new CosFragment()).commit();
+        }
+        else if(R.id.nav_logout == menuItem.getItemId()){
+            SharedPreferences sharedPreferences;
+            sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.commit();
+            startActivity(intent);
+            finish();
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
