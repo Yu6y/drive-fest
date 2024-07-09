@@ -2,6 +2,7 @@ package com.example.drivefest.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -26,8 +27,13 @@ public class EventShort implements Parcelable {
     private String[] tags;
     private String voivodeship;
     private boolean isFollowed;
+    private String dateString;
 
-    public EventShort(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags, String voivodeship, boolean isFollowed) {
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public EventShort(String id, String name, String image, LocalDate date, String location, int followersCount, String[] tags, String voivodeship, boolean isFollowed, String dateString) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -37,6 +43,7 @@ public class EventShort implements Parcelable {
         this.tags = tags;
         this.voivodeship = voivodeship;
         this.isFollowed = isFollowed;
+        this.dateString = dateString;
     }
 
     public EventShort(){
@@ -61,6 +68,10 @@ public class EventShort implements Parcelable {
 
     public String getImage() {
         return image;
+    }
+
+    public String getDateString() {
+        return dateString;
     }
 
     public LocalDate getDate() {
@@ -89,10 +100,12 @@ public class EventShort implements Parcelable {
 
     public void setData(Map<String, Object> document, String id){
         this.id = id;
+        Log.e("eventshort", document.get("name").toString());
         name = document.get("name").toString();
         image = document.get("image").toString();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         date = LocalDate.parse(document.get("date").toString(), formatter);
+        dateString = document.get("date").toString();
         location = document.get("location").toString();
         followersCount = Integer.valueOf(document.get("followersCount").toString());
         List<String> tagsList = (List<String>) document.get("tags");
@@ -151,5 +164,8 @@ public class EventShort implements Parcelable {
 
     public void setFollowed(){
         isFollowed = true;
+    }
+    public void setUnFollowed(){
+        isFollowed = false;
     }
 }

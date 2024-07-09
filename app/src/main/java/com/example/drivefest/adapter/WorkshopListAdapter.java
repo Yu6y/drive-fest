@@ -54,7 +54,7 @@ public class WorkshopListAdapter extends RecyclerView.Adapter<WorkshopListViewHo
         }
         holder.tags.setText(tag);
         holder.city.setText(list.get(position).getLocation());
-        holder.rating.setText(String.valueOf(list.get(position).getRating()));
+        holder.rating.setText(String.valueOf(list.get(position).getRate()));
         Glide
                 .with(context)
                 .load(list.get(position).getImage())
@@ -103,7 +103,7 @@ public class WorkshopListAdapter extends RecyclerView.Adapter<WorkshopListViewHo
                 comparator = Comparator.comparing(Workshop::getLocation, collator);
                 break;
             case "rate":
-                comparator = Comparator.comparing(Workshop::getRating);
+                comparator = Comparator.comparing(Workshop::getRate);
                 break;
         }
 

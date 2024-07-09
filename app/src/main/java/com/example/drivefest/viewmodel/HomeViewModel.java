@@ -25,6 +25,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,18 +230,17 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void setFollowedEvents(){
-        Log.e("Tu sie", "wypierdala");
-        for(EventShort event : favEventShortLiveData.getValue()){
-            for(EventShort eventShort: eventShortListLiveData.getValue()){
-                Log.e("porownanie", event.getId() + " _ " + eventShort.getId());
-                if(event.getId().equals(eventShort.getId())){
-                    eventShort.setFollowed();
-                    break;
+        if(favEventShortLiveData.getValue() != null) {
+            for (EventShort event : favEventShortLiveData.getValue()) {
+                for (EventShort eventShort : eventShortListLiveData.getValue()) {
+                    Log.e("porownanie", event.getId() + " _ " + eventShort.getId());
+                    if (event.getId().equals(eventShort.getId())) {
+                        eventShort.setFollowed();
+                        break;
+                    }
                 }
             }
         }
-        for(EventShort t : getEventShortList().getValue())
-            Log.e("debug follow", String.valueOf(t.getIsFollowed()));
     }
     public void fetchWorkshopsList(){
         mDb.getWorkshops(new DatabaseDataCallback() {
@@ -332,7 +332,7 @@ public class HomeViewModel extends ViewModel {
                     rate = 0;
             }
             for(Workshop elem: currentList){
-                if(elem.getRating() >= rate
+                if(elem.getRate() >= rate
                         && (voivTags.get("Województwo").contains(elem.getVoivodeship())
                         || voivTags.get("Województwo").isEmpty())
                 ){
@@ -454,17 +454,20 @@ public class HomeViewModel extends ViewModel {
     public void setRatedWorkshops(){
         Log.e("rated", "workshops");
         Log.e("Tu sie", "wypierdala");
-        for(RatedWorkshop rated : ratedWorkshop.getValue()){
-            for(Workshop workshop: workshopsLiveData.getValue()){
-                Log.e("porownanie", workshop.getId() + " _ " + rated.getWorkshopId());
-                if(rated.getWorkshopId().equals(workshop.getId())){
-                    workshop.setRated(rated.getRate());
-                    break;
+        if(ratedWorkshop.getValue() != null) {
+            for (RatedWorkshop rated : ratedWorkshop.getValue()) {
+                for (Workshop workshop : workshopsLiveData.getValue()) {
+                    Log.e("porownanie", workshop.getId() + " _ " + rated.getWorkshopId());
+                    if (rated.getWorkshopId().equals(workshop.getId())) {
+                        workshop.setRated();
+                        workshop.setRatedFromDb(true);
+                        Log.e("rated", String.valueOf(rated.getRate()));
+                        workshop.setRateByUser(rated.getRate());
+                        break;
+                    }
                 }
             }
         }
-        for(Workshop t : getWorkshopsLiveData().getValue())
-            Log.e("debug follow", String.valueOf(t.isRated()));
     }
 
     public void clearWorkshopDesc(){
@@ -481,5 +484,324 @@ public class HomeViewModel extends ViewModel {
 
     public String getUserId(){
         return userId;
+    }
+
+    public void followEvent(EventShort event){
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", event.getDateString());
+        map.put("eventId", event.getId());
+        map.put("followersCount", event.getFollowersCount() + 1);
+        map.put("image", event.getImage());
+        map.put("location", event.getLocation());
+        map.put("name", event.getName());
+        map.put("tags", Arrays.asList(event.getTags()));
+        map.put("voivodeship", event.getVoivodeship());
+        map.put("userId", mAuth.getCurrentUserId());
+
+        event.setFollowersCount(event.getFollowersCount() + 1);
+        event.setFollowed();
+        List<EventShort> newFav = favEventShortLiveData.getValue();
+        if(newFav == null)
+            newFav = new ArrayList<>();
+        newFav.add(0, event);
+        favEventShortLiveData.postValue(newFav);
+       // updateEventFav(event);
+        mDb.postFavEvent(map, new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+        mDb.updateFollowedEvent(event.getId(), event.getFollowersCount(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+    }
+
+    public void unFollowEvent(EventShort event){
+        event.setFollowersCount(event.getFollowersCount() - 1);
+        event.setUnFollowed();
+       // updateEventFav(event);
+        mDb.deleteFollowedEvent(event.getId(), mAuth.getCurrentUserId(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+
+        mDb.updateFollowedEvent(event.getId(), event.getFollowersCount(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+    }
+    public void unFollowFavEvent(EventShort event){
+        List<EventShort> currList;
+        List<EventShort> newFav;
+        newFav = favEventShortLiveData.getValue();
+        if(newFav == null)
+            newFav = new ArrayList<>();
+        newFav.remove(event);
+        favEventShortLiveData.postValue(newFav);
+        currList = eventShortListLiveData.getValue();
+        for(EventShort eventShort: currList){
+            if(eventShort.getId().equals(event.getId())) {
+                eventShort.setUnFollowed();
+                eventShort.setFollowersCount(event.getFollowersCount() - 1);
+                break;
+            }
+        }
+
+        eventShortListLiveData.postValue(currList);
+        event.setFollowersCount(event.getFollowersCount() - 1);
+        // updateEventFav(event);
+        mDb.deleteFollowedEvent(event.getId(), mAuth.getCurrentUserId(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+
+        mDb.updateFollowedEvent(event.getId(), event.getFollowersCount(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+    }
+   /* private void updateEventFav(EventShort event){
+        List<EventShort> currentList = favEventShortLiveData.getValue();
+        if (currentList != null) {
+            int index = currentList.indexOf(event);
+            if (index != -1) {
+                currentList.remove(event);
+                favEventShortLiveData.postValue(currentList);
+            }
+            else{
+                currentList.add(event);
+                favEventShortLiveData.postValue(currentList);
+            }
+        }else {
+            currentList = new ArrayList<>();
+            currentList.add(event);
+            favEventShortLiveData.postValue(currentList);
+        }
+    }*/
+
+    public void followDescEvent(EventShort event){
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", event.getDateString());
+        map.put("eventId", event.getId());
+        map.put("followersCount", event.getFollowersCount() + 1);
+        map.put("image", event.getImage());
+        map.put("location", event.getLocation());
+        map.put("name", event.getName());
+        map.put("tags", Arrays.asList(event.getTags()));
+        map.put("voivodeship", event.getVoivodeship());
+        map.put("userId", mAuth.getCurrentUserId());
+
+        List<EventShort> currList = eventShortListLiveData.getValue();
+        EventShort newES = null;
+        //event ustawic follow i count
+        //dodac do ulubionych
+        for(EventShort eventShort: currList){
+            if(eventShort.getId().equals(event.getId())){
+                eventShort.setFollowersCount(eventShort.getFollowersCount() + 1);
+                eventShort.setFollowed();
+                newES = eventShort;
+                break;
+            }
+        }
+        eventShortListLiveData.postValue(currList);
+        List<EventShort> newFav = favEventShortLiveData.getValue();
+        if(newFav == null)
+            newFav = new ArrayList<>();
+        newFav.add(0, newES);
+        favEventShortLiveData.postValue(newFav);
+        event.setFollowersCount( event.getFollowersCount() + 1);
+        // updateEventFav(event);
+        mDb.postFavEvent(map, new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+        mDb.updateFollowedEvent(event.getId(), event.getFollowersCount(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+    }
+
+    public void unFollowDescEvent(EventShort event){
+        event.setFollowersCount(event.getFollowersCount() - 1);
+        List<EventShort> currList = eventShortListLiveData.getValue();
+
+        for(EventShort eventShort: currList){
+            if(eventShort.getId().equals(event.getId())){
+                eventShort.setFollowersCount(eventShort.getFollowersCount() - 1);
+                eventShort.setUnFollowed();
+                break;
+            }
+        }
+        eventShortListLiveData.postValue(currList);
+
+        List<EventShort> newFav;
+        newFav = favEventShortLiveData.getValue();
+        if(newFav == null)
+            newFav = new ArrayList<>();
+        for(EventShort delete: newFav){
+            if(delete.getId().equals(event.getId())) {
+                Log.e("deletign", "event from favorites");
+                Log.e("deletign", event.getName() + "  " + delete.getName());
+                boolean check = newFav.remove(delete);
+                Log.e("deletign", String.valueOf(check));
+                break;
+            }
+        }
+        favEventShortLiveData.postValue(newFav);
+
+        mDb.deleteFollowedEvent(event.getId(), mAuth.getCurrentUserId(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+
+        mDb.updateFollowedEvent(event.getId(), event.getFollowersCount(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+    }
+
+   public void workshopRate(Workshop workshop, float rate){
+        RatedWorkshop rated = new RatedWorkshop(mAuth.getCurrentUserId(),
+                workshop.getId(), (int)rate);
+        Map<String, Object> map = new HashMap<>();
+        map.put("rate", rated.getRate());
+        map.put("userId", rated.getUserId());
+        map.put("workshopId", rated.getWorkshopId());
+
+        List<RatedWorkshop> currList = ratedWorkshop.getValue();
+        if(currList == null)
+            currList = new ArrayList<>();
+        currList.add(0, rated);
+        ratedWorkshop.postValue(currList);
+        workshop.updateRating((int)rate,1);
+       WorkshopDesc workshopDesc1 = getWorkshopDesc().getValue();
+       workshopDesc1.setRateCount(workshopDesc1.getRateCount() + 1);
+
+       float value = 0;
+       float newRate, newRateCount = workshopDesc1.getRateCount();
+       for(Integer i = 1; i < 6; i++)
+           value += i * workshopDesc1.getRatings().get(i);
+       newRate = (float) (Math.round((value /newRateCount) * 10) / 10.0);
+        Log.e("debug rtate", String.valueOf(value + "  " + newRateCount) + " " + newRate);
+       workshopDesc1.setRate(newRate);
+       workshopDesc.postValue(workshopDesc1);
+
+       List<Workshop> updateList = workshopsLiveData.getValue();
+
+        for(Workshop workshop1: updateList){
+            if(workshop1.getId().equals(workshop.getId())){
+               workshop1.setRated();
+               workshop1.setRate(newRate);
+               workshop1.setRatedFromDb(true);
+               break;
+            }
+        }
+        workshopsLiveData.postValue(updateList);
+
+        mDb.addWorkshopRate(map, new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+
+        mDb.updateRatedWorkshop(workshop.getId(), workshop.getRatingsForDb(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", (String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+            }
+        });
+    }
+
+    public EventShort getEventById(String id){
+        EventShort event = new EventShort();
+        for(EventShort eventShort: eventShortListLiveData.getValue()){
+            if(eventShort.getId().equals(id)){
+                event = eventShort;
+                break;
+            }
+        }
+
+        return event;
     }
 }

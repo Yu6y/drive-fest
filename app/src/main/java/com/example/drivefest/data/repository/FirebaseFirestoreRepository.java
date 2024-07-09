@@ -1,5 +1,6 @@
 package com.example.drivefest.data.repository;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -38,7 +39,7 @@ public class FirebaseFirestoreRepository {
     }
 
     public void getEventShort(DatabaseDataCallback callback) {
-        mDatabase.collection("event_short")
+        mDatabase.collection("events_short")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -65,7 +66,7 @@ public class FirebaseFirestoreRepository {
     }
 
     public void getEventDesc(String id, DatabaseDataCallback callback) {
-        mDatabase.collection("event_short")
+        mDatabase.collection("events_short")
                 .document(id)
                 .collection("event_desc")
                 .document("0")
@@ -88,7 +89,7 @@ public class FirebaseFirestoreRepository {
     }
 
     public void getFollowedEvents(String userId, DatabaseDataCallback callback) {//"hR3XI705oabbMqILbDTE3MpHBl43"
-        mDatabase.collection("fav_events")
+        mDatabase.collection("events_fav")
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -191,7 +192,7 @@ public class FirebaseFirestoreRepository {
     }*/
 
     public void getWorkshopRate(String userId, DatabaseDataCallback callback) {//"hR3XI705oabbMqILbDTE3MpHBl43"
-        mDatabase.collection("rated_workshops")
+        mDatabase.collection("workshops_rated")
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -219,7 +220,7 @@ public class FirebaseFirestoreRepository {
     }
 
     public void postComment(String id, Map<String, Object> map, DatabaseDataCallback callback){
-        mDatabase.collection("event_short")
+        mDatabase.collection("events_short")
                 .document(id)
                 .collection("event_desc")
                 .document("0")
@@ -242,7 +243,7 @@ public class FirebaseFirestoreRepository {
     }
 
     public void fetchCommentsList(String id, DatabaseDataCallback callback) {
-        mDatabase.collection("event_short")
+        mDatabase.collection("events_short")
                 .document(id)
                 .collection("event_desc")
                 .document("0")
@@ -271,4 +272,109 @@ public class FirebaseFirestoreRepository {
                     }
                 });
     }
+
+    public void postFavEvent(Map<String, Object> map, DatabaseDataCallback callback){
+        mDatabase.collection("events_fav")
+                .add(map)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        List<String> response = new ArrayList<>();
+                        response.add("Success");
+                        callback.OnSuccess(response);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.OnFail(e.getMessage());
+                    }
+                });
+    }
+    public void updateFollowedEvent(String id, int count, DatabaseDataCallback callback){
+        mDatabase.collection("events_short")
+                .document(id)
+                .update("followersCount", count)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        List<String> response = new ArrayList<>();
+                        response.add("Success");
+                        callback.OnSuccess(response);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.OnFail(e.getMessage());
+                    }
+                });
+    }
+
+    public void deleteFollowedEvent(String eventId, String userId, DatabaseDataCallback callback){
+        mDatabase.collection("events_fav")
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("eventId", eventId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot doc : task.getResult()){
+                                doc.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        List<String> response = new ArrayList<>();
+                                        response.add("success");
+                                        callback.OnSuccess(response);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        callback.OnFail(e.getMessage());
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void addWorkshopRate(Map<String, Object> map, DatabaseDataCallback callback){
+        mDatabase.collection("workshops_rated")
+                .add(map)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        List<String> response = new ArrayList<>();
+                        response.add("Success");
+                        callback.OnSuccess(response);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.OnFail(e.getMessage());
+                    }
+                });
+    }
+
+    public void updateRatedWorkshop(String id, Map<String, Long> ratings, DatabaseDataCallback callback){
+        mDatabase.collection("workshops")
+                .document(id)
+                .update("ratings", ratings)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        List<String> response = new ArrayList<>();
+                        response.add("Success");
+                        callback.OnSuccess(response);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.OnFail(e.getMessage());
+                    }
+                });
+    }
+
 }

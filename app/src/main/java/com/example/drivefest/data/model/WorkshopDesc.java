@@ -19,12 +19,14 @@ public class WorkshopDesc extends Workshop{
                 workshop.getName(),
                 workshop.getImage(),
                 workshop.getLocation(),
-                workshop.getRating(),
                 workshop.getTags(),
                 workshop.getVoivodeship(),
-                workshop.getRatingCount(),
-                workshop.isRated(),
-                workshop.getRate());
+                workshop.getRated(),
+                workshop.getRate(),
+                workshop.getRatings(),
+                workshop.getRateCount(),
+                workshop.isRatedFromDb(),
+                workshop.getRateByUser());
         this.address = address;
         this.description = description;
         this.locationCords = location;
@@ -58,12 +60,14 @@ public class WorkshopDesc extends Workshop{
                 workshop.getName(),
                 workshop.getImage(),
                 workshop.getLocation(),
-                workshop.getRating(),
                 workshop.getTags(),
                 workshop.getVoivodeship(),
-                workshop.getRatingCount(),
-                workshop.isRated(),
-                workshop.getRate());
+                workshop.getRated(),
+                workshop.getRate(),
+                workshop.getRatings(),
+                workshop.getRateCount(),
+                workshop.isRatedFromDb(),
+                workshop.getRateByUser());
     }
 
 }

@@ -30,12 +30,14 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
     private Context context;
     private List<EventShort> list;
     private ClickListener clickListener;
+    private FollowClickListener followClickListener;
     private String sortBy;
 
-    public EventListAdapter(Context context, List<EventShort> list, ClickListener listener) {
+    public EventListAdapter(Context context, List<EventShort> list, ClickListener listener, FollowClickListener followClickListener) {
         this.context = context;
         this.list = list;
         clickListener = listener;
+        this.followClickListener = followClickListener;
         sortBy = "xdefault";
     }
 
@@ -55,6 +57,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
             Log.e("adapter", "followed");
             setBtnFollowed(holder);
         }
+        else setBtnUnFollowed(holder);
         Glide
                 .with(context)
                 .load(list.get(position).getImage())
@@ -75,12 +78,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListViewHolder>{
         holder.eventFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(holder.eventFollow.getText().equals("Obserwuj")) {
-                   setBtnFollowed(holder);
-                }
-                else if(holder.eventFollow.getText().equals("Obserwujesz")){
-                    setBtnUnFollowed(holder);
-                }
+               followClickListener.onBtnClick(list.get(pos), holder.eventFollow, holder.eventFollowers);
             }
         });
 

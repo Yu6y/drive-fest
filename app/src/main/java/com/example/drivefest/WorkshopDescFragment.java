@@ -77,14 +77,13 @@ public class WorkshopDescFragment extends Fragment {
                             tag += ", ";
                     }
                     tags.setText(tag);
-                    rating.setText("Ocena: " + workshopDesc.getRating());
-                    ratingCount.setText("Ocen: " + workshopDesc.getRatingCount());
+                    rating.setText("Ocena: " + workshopDesc.getRate());
+                    ratingCount.setText("Ocen: " + workshopDesc.getRateCount());
 
 
                     if(workshopDesc.isRated()){
-                        Log.e("rating bar", "kurwa jego mac");
-                        ratingBar.setRating(workshopDesc.getRate());
-                        Log.e("no ja pierdole", String.valueOf(workshopDesc.getRate()));
+                        ratingBar.setRating(workshopDesc.getRateByUser());
+                        Log.e("no ja", String.valueOf(workshopDesc.getRateByUser()));
                         ratingBar.setEnabled(false);
                     }
                     Glide
@@ -101,8 +100,10 @@ public class WorkshopDescFragment extends Fragment {
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                Toast.makeText(getContext(), String.valueOf(ratingBar.getRating()), Toast.LENGTH_SHORT).show();
-
+                if(!homeVM.getWorkshopDesc().getValue().isRatedFromDb()){
+                    Toast.makeText(getContext(), String.valueOf(ratingBar.getRating()), Toast.LENGTH_SHORT).show();
+                    homeVM.workshopRate(workshop, rating);
+                }
                 ratingBar.setEnabled(false);
             }
         });

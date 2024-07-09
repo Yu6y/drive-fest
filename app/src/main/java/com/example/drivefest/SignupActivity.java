@@ -86,6 +86,7 @@ public class SignupActivity extends AppCompatActivity {
                         });
                         startActivity(intent);
                         finish();
+                        break;
                     case 1:
                         Toast.makeText(SignupActivity.this, "Success login", Toast.LENGTH_SHORT).show();
                         break;

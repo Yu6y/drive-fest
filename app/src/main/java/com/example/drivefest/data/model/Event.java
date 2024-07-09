@@ -23,8 +23,9 @@ public class Event extends EventShort{
                 eventShort.getLocation(),
                 eventShort.getFollowersCount(),
                 eventShort.getTags(),
-                eventShort.getVoivodeship(),
-                eventShort.getIsFollowed());
+                eventShort.getVoivodeship(),//ustawic dateStr
+                eventShort.getIsFollowed(),
+                eventShort.getDateString());
     }
 
     public void setData(Map<String, Object> document){

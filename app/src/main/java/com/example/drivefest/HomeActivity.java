@@ -105,6 +105,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if(menuItem.getItemId() == R.id.nav_events)
             ;
         if(R.id.nav_followed == menuItem.getItemId()) {
+            homeVM.fetchFavEventShortList();
+            //sprawdzic czy jest na stacku jesli tak to wyjebac i odpalic
+            //onback ogarnac
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, new FavoritesFragment(), "favoriteFragment")

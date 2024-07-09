@@ -1,5 +1,6 @@
 package com.example.drivefest;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -9,10 +10,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -22,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.drivefest.adapter.ClickListener;
 import com.example.drivefest.adapter.EventListAdapter;
+import com.example.drivefest.adapter.FollowClickListener;
 import com.example.drivefest.data.model.EventShort;
 import com.example.drivefest.viewmodel.HomeViewModel;
 
@@ -52,17 +56,45 @@ public class EventsFragment extends Fragment{
             @Override
             public void onClick(String id) {
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("event_id",(Parcelable) homeVM.getEventShortList().getValue().get(Integer.valueOf(id)));
+                bundle.putParcelable("event_id", (Parcelable) homeVM.getEventById(id));
+
                 EventDescFragment fragment = new EventDescFragment();
                 fragment.setArguments(bundle);
                 FragmentManager fragmentManager = getParentFragmentManager();
                 Fragment currFragment = fragmentManager.findFragmentByTag("eventsFragment");
                 getParentFragmentManager()
                         .beginTransaction()
-                        .add(R.id.container,fragment, "descFragment")
+                        .add(R.id.container, fragment, "descFragment")
                         .hide(currFragment)
                         .addToBackStack("desc")
                         .commit();
+            }
+        }, new FollowClickListener() {
+            @Override
+            public void onBtnClick(EventShort event, Button button, TextView text) {
+                if(button.getText().equals("Obserwuj")) {
+                    homeVM.followEvent(event);
+                    button.setText("Obserwujesz");
+                    Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white);
+                    button.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+                    button.setBackgroundResource(R.drawable.button_pressed);
+                    button.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                    /*int count = event.getFollowersCount() + 1;
+                    text.setText(String.valueOf(count));*/
+                    eventListAdapter.notifyDataSetChanged();
+                }
+                else{
+                    homeVM.unFollowEvent(event);
+                    button.setText("Obserwuj");
+                    Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite);
+                    button.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+                    button.setBackgroundResource(R.drawable.custom_button);
+                    button.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+                    /*int count = event.getFollowersCount() - 1;
+                    text.setText(String.valueOf(count));*/
+                    eventListAdapter.notifyDataSetChanged();
+                }
+
             }
         });
         list.setAdapter(eventListAdapter);
@@ -195,5 +227,9 @@ public class EventsFragment extends Fragment{
             linearLayout.setVisibility(View.VISIBLE);
             searchView.setVisibility(View.GONE);
         }
+    }
+
+    public void reload(){
+        eventListAdapter.notifyDataSetChanged();
     }
 }

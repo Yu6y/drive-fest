@@ -95,7 +95,11 @@
                         date.setText(event.getDate().toString());
                         Log.e("evenrtdsc", String.valueOf(event.getIsFollowed()));
                         if(event.getIsFollowed()){
-                            setBtnFollow();
+                            btnFollow.setText("Obserwujesz");
+                            Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white);
+                            btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+                            btnFollow.setBackgroundResource(R.drawable.button_pressed);
+                            btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
                         }
                         String tag = "";
                         String[] tagsArray = event.getTags();
@@ -126,22 +130,35 @@
             });
 
             btnFollow.setOnClickListener( v -> {
-                    if (btnFollow.getText().equals("Obserwuj")) {
-                        setBtnFollow();
-                    } else if (btnFollow.getText().equals("Obserwujesz")) {
-                        setBtnUnfollow();
-                    }
+                if(btnFollow.getText().equals("Obserwuj")) {
+                    homeVM.followDescEvent(eventVM.getEvent().getValue());
+                    followers.setText("Obserwujących: " + eventVM.getEvent().getValue().getFollowersCount());
+                    btnFollow.setText("Obserwujesz");
+                    Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white);
+                    btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+                    btnFollow.setBackgroundResource(R.drawable.button_pressed);
+                    btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+
+                }
+                else{
+                    homeVM.unFollowDescEvent(eventVM.getEvent().getValue());
+                    btnFollow.setText("Obserwuj");
+                    followers.setText("Obserwujących: " + eventVM.getEvent().getValue().getFollowersCount());
+                    Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite);
+                    btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
+                    btnFollow.setBackgroundResource(R.drawable.custom_button);
+                    btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+                }
 
             });
 
             btnPostComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(!comment.getText().equals("")){
+                    if(!String.valueOf(comment.getText()).trim().isEmpty()){
                         btnPostComment.setVisibility(View.INVISIBLE);
                         Comment commentPosted = new Comment(String.valueOf(comment.getText()), homeVM.getUserPic(), homeVM.getUserId(), homeVM.getUserDisplayName());
                         eventVM.postComment(commentPosted);
-                        btnPostComment.setVisibility(View.VISIBLE);
                         eventVM.getCommentResponse().observe(getViewLifecycleOwner(), new Observer<String>() {
                             @Override
                             public void onChanged(String s) {
@@ -149,7 +166,8 @@
                                 commentListAdapter.updateList(commentPosted);
                             }
                         });
-
+                        comment.setText("");
+                        btnPostComment.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -194,20 +212,5 @@
                 fragmentManager.beginTransaction().hide(fragment).commit();
                 fragmentManager.popBackStack();
             }
-        }
-        public void setBtnUnfollow(){
-            btnFollow.setText("Obserwuj");
-            Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite);
-            btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-            btnFollow.setBackgroundResource(R.drawable.custom_button);
-            btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
-        }
-
-        public void setBtnFollow(){
-            btnFollow.setText("Obserwujesz");
-            Drawable newIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white);
-            btnFollow.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-            btnFollow.setBackgroundResource(R.drawable.button_pressed);
-            btnFollow.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
         }
     }

@@ -85,7 +85,7 @@ public class WorkshopsFragment extends Fragment {
 
             workshopListAdapter.updateData(workshops);
             homeVM.getRatedWorkshop().observe(getViewLifecycleOwner(), ratedWorkshops -> {
-                Log.e("cos", "kurwawaaaaaaaaaaaa");
+
                 homeVM.setRatedWorkshops();
                 workshopListAdapter.notifyDataSetChanged();
             });
