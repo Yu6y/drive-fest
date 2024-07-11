@@ -1,14 +1,16 @@
 package com.example.drivefest.viewmodel;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.Telephony;
+import android.provider.MediaStore;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.drivefest.data.model.Event;
 import com.example.drivefest.data.model.EventShort;
 import com.example.drivefest.data.model.RatedWorkshop;
 import com.example.drivefest.data.model.Workshop;
@@ -18,11 +20,10 @@ import com.example.drivefest.data.repository.FirebaseFirestoreRepository;
 import com.example.drivefest.data.repository.FirebaseStorageRepository;
 import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 import com.example.drivefest.data.repository.callback.StorageUrlCallback;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +50,12 @@ public class HomeViewModel extends ViewModel {
     private HashMap<String, List<String>> filterCheckedItemsWorkshop;
     private MutableLiveData<List<RatedWorkshop>> ratedWorkshop;
     private String userId;
+    private MutableLiveData<String> addEventPhotoName;
+    private MutableLiveData<String> addEventId;
+    private MutableLiveData<String> addEventResponse;
+    private MutableLiveData<String> addWorkshopPhotoName;
+    private MutableLiveData<String> addWorkshopId;
+    private MutableLiveData<String> addWorkshopResponse;
     public HomeViewModel(){
         mDb = FirebaseFirestoreRepository.getDbInstance();
         storage = FirebaseStorageRepository.getStorageInstance();
@@ -67,6 +74,12 @@ public class HomeViewModel extends ViewModel {
         sortWorkshop = -1;
         filterCheckedItemsWorkshop = null;
         ratedWorkshop = new MutableLiveData<>();
+        addEventPhotoName = new MutableLiveData<>();
+        addEventId = new MutableLiveData<>();
+        addEventResponse = new MutableLiveData<>();
+        addWorkshopPhotoName = new MutableLiveData<>();
+        addWorkshopId = new MutableLiveData<>();
+        addWorkshopResponse = new MutableLiveData<>();
     }
 
     public void fetchEventShortList(){
@@ -803,5 +816,254 @@ public class HomeViewModel extends ViewModel {
         }
 
         return event;
+    }
+
+   /* public int makeEvent(String name, String date, String location, String address, String pic,
+                             String desc, HashMap<String, List<String>> list){
+        boolean[] flag = {false};
+      /*  storage.addEventPhoto(Uri.parse(pic), new StorageUrlCallback() {
+            @Override
+            public void onUrlReceived(String url) {
+                Log.e("zdjecie v1", url);
+                shortEvent.put("image", url);
+                //dodac livedata dodaje obrazek, observe -> metoda dodaj do bazy
+            }
+        });
+
+
+
+        mDb.postEventDesc(eventMap, eventShort.getId(), new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", "addeed event");
+                flag[0] = true;
+            }
+
+            @Override
+            public void OnFail(String response) {
+                flag[0] = false;
+            }
+        });
+
+        if(!flag[0])
+            return 3;
+
+
+
+        return 0;
+    }*/
+
+    public void pushEventPhoto(String photo){
+        storage.addPhoto(Uri.parse(photo), "event", new StorageUrlCallback() {
+            @Override
+            public void onUrlReceived(String url) {
+                Log.e("zdjecie v1", url);
+                addEventPhotoName.postValue(url);
+            }
+        });
+    }
+
+    public MutableLiveData<String> getPhotoName(){
+        return addEventPhotoName;
+    }
+
+    public void pushEventShort(String name, String date, String location,
+                                HashMap<String, List<String>> list){
+
+        Map<String, Object> shortEvent = new HashMap<>();
+        shortEvent.put("name", name);
+        shortEvent.put("date", date);
+        shortEvent.put("location", location);
+        shortEvent.put("followersCount", 0);
+        shortEvent.put("voivodeship", list.get("Województwo").get(0));
+        shortEvent.put("tags", list.get("Tagi"));
+        shortEvent.put("image", addEventPhotoName.getValue());
+
+        Log.e("eventshot", (String)shortEvent.get("image"));
+        mDb.postToDbEventWorkshop(shortEvent, "event", new DatabaseDataCallback() {
+
+            @Override
+            public void OnSuccess(List<?> response) {
+                addEventId.postValue((String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+                addEventId.postValue("fail");
+            }
+        });
+    }
+
+    public MutableLiveData<String> getEventId(){
+        return addEventId;
+    }
+
+    public void pushEventDesc(String name, String date, String location, String address,
+                              String desc,HashMap<String, List<String>> checked){
+
+        EventShort eventShort = new EventShort();
+        Map<String, Object> list = new HashMap<>();
+        list.put("name", name);
+        list.put("date", date);
+        list.put("location", location);
+        list.put("followersCount", 0);
+        list.put("voivodeship", checked.get("Województwo").get(0));
+        list.put("tags", checked.get("Tagi"));
+        Log.e("tags checLsd", String.valueOf(checked.get("Tagi").size()));
+        list.put("image", addEventPhotoName.getValue());
+        eventShort.setData(list, addEventId.getValue());
+
+
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("description", desc);
+        eventMap.put("location", "");
+        eventMap.put("address", address);
+        mDb.postToDbEventWorkshopDesc(eventMap, addEventId.getValue(), "event", new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", "addeed event");
+
+                List<EventShort> currList = eventShortListLiveData.getValue();
+                currList.add(0, eventShort);
+                eventShortListLiveData.postValue(currList);
+
+                addEventResponse.postValue("success");
+            }
+
+            @Override
+            public void OnFail(String response) {
+                addEventResponse.postValue("fail");
+            }
+        });
+    }
+
+    public MutableLiveData<String> getAddEventResponse(){
+        return addEventResponse;
+    }
+
+    public Bitmap resizeImage(Uri imageUri, Activity activity) {
+        Bitmap resizedBitmap = null;
+        try {
+            InputStream input = activity.getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            input.close();
+
+            int originalHeight = bitmap.getHeight();
+            int targetHeight = originalHeight;
+
+            int newHeight = targetHeight;
+            int newWidth = 2 * newHeight;
+
+            resizedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return resizedBitmap;
+    }
+
+
+    public Uri getImageUri(Context context, Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
+        return Uri.parse(path);
+    }
+
+    public void pushWorkshopPhoto(String photo){
+        storage.addPhoto(Uri.parse(photo), "workshop", new StorageUrlCallback() {
+            @Override
+            public void onUrlReceived(String url) {
+                Log.e("zdjecie v1", url);
+                addWorkshopPhotoName.postValue(url);
+            }
+        });
+    }
+
+    public MutableLiveData<String> getWorkshopPhotoName(){
+        return addWorkshopPhotoName;
+    }
+
+    public void pushWorkshopShort(String name, String location, HashMap<String, List<String>> list){
+        Map<String, Object> workshop = new HashMap<>();
+        workshop.put("name", name);
+        workshop.put("location", location);
+        workshop.put("voivodeship", list.get("Województwo").get(0));
+        workshop.put("tags", list.get("Tagi"));
+        workshop.put("image", addWorkshopPhotoName.getValue());
+        Map<String, Long> map = new HashMap<>();
+        map.put("1", (long)0);
+        map.put("2", (long)0);
+        map.put("3", (long)0);
+        map.put("4", (long)0);
+        map.put("5", (long)0);
+        workshop.put("ratings", map);
+
+        Log.e("eventshot", (String)workshop.get("image"));
+        mDb.postToDbEventWorkshop(workshop, "workshop", new DatabaseDataCallback() {
+
+            @Override
+            public void OnSuccess(List<?> response) {
+                addWorkshopId.postValue((String)response.get(0));
+            }
+
+            @Override
+            public void OnFail(String response) {
+                Log.e("Fail", response);
+                addWorkshopId.postValue("fail");
+            }
+        });
+    }
+
+    public MutableLiveData<String> getWorkshopId(){
+        return addWorkshopId;
+    }
+
+    public void pushWorkshopDesc(String name, String location, String address,
+                              String desc,HashMap<String, List<String>> checked){
+
+        Workshop workshop = new Workshop();
+        Map<String, Object> list = new HashMap<>();
+        list.put("name", name);
+        list.put("location", location);
+        list.put("voivodeship", checked.get("Województwo").get(0));
+        list.put("tags", checked.get("Tagi"));
+        list.put("image", addWorkshopPhotoName.getValue());
+        Map<String, Long> map = new HashMap<>();
+        map.put("1", (long)0);
+        map.put("2", (long)0);
+        map.put("3", (long)0);
+        map.put("4", (long)0);
+        map.put("5", (long)0);
+        list.put("ratings", map);
+        workshop.setData(list, addWorkshopId.getValue());
+
+
+        Map<String, Object> workshopMap = new HashMap<>();
+        workshopMap.put("description", desc);
+        workshopMap.put("location", "");
+        workshopMap.put("address", address);
+        mDb.postToDbEventWorkshopDesc(workshopMap, addWorkshopId.getValue(), "workshop", new DatabaseDataCallback() {
+            @Override
+            public void OnSuccess(List<?> response) {
+                Log.d("Success", "addeed event");
+
+                List<Workshop> currList = workshopsLiveData.getValue();
+                if(currList != null) {
+                    currList.add(0, workshop);
+                    workshopsLiveData.postValue(currList);
+                }
+                addWorkshopResponse.postValue("success");
+            }
+
+            @Override
+            public void OnFail(String response) {
+                addWorkshopResponse.postValue("fail");
+            }
+        });
+    }
+
+    public MutableLiveData<String> getAddWorkshopResponse(){
+        return addWorkshopResponse;
     }
 }

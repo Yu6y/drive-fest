@@ -128,8 +128,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .addToBackStack("workshops")
                     .commit();
         }
-        else if(R.id.nav_workshop == menuItem.getItemId()) {
-            //getSupportFragmentManager().beginTransaction().replace(R.id.fragmet_container, new CosFragment()).commit();
+        else if(R.id.nav_add_event == menuItem.getItemId()) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, new AddEventFragment(), "addEventFragment")
+                    .addToBackStack("addEvent")
+                    .commit();
+        }
+        else if(R.id.nav_add_workshop == menuItem.getItemId()) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, new AddWorkshopFragment(), "addWorkshopFragment")
+                    .addToBackStack("addWorkshop")
+                    .commit();
         }
         else if(R.id.nav_logout == menuItem.getItemId()){
             SharedPreferences sharedPreferences;
@@ -144,6 +155,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+        //STATE_CHECKED ????
     }
 
     @Override

@@ -66,6 +66,7 @@ public class ExpandableListDataItems {
         tags.add("blacharka");
         tags.add("lakiernia");
         tags.add("myjnia");
+        tags.add("wulkanizacja");
 
         expandableList.put("Województwo", voivodeships);
         expandableList.put("Tagi", tags);

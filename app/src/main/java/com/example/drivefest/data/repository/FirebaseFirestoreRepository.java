@@ -1,6 +1,5 @@
 package com.example.drivefest.data.repository;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,7 +20,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -368,6 +366,69 @@ public class FirebaseFirestoreRepository {
                         response.add("Success");
                         callback.OnSuccess(response);
 
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.OnFail(e.getMessage());
+                    }
+                });
+    }
+
+    public void postToDbEventWorkshop(Map<String, Object> map, String type, DatabaseDataCallback callback){
+        String collection = "";
+        if(type.equals("event"))
+            collection = "events_short";
+        else if(type.equals("workshop"))
+            collection = "workshops";
+        mDatabase.collection(collection)
+                .add(map)
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        if (task.isSuccessful()) {
+                            DocumentReference documentReference = task.getResult();
+                            if (documentReference != null) {
+                                String documentId = documentReference.getId();
+                                Log.d("DocumentSnapshot added with ID: ", documentId);
+                                List<String> response = new ArrayList<>();
+                                response.add(documentReference.getId());
+                                callback.OnSuccess(response);
+                            }
+                        } else {
+                            Log.w( "Error adding document", task.getException());
+                            callback.OnFail(task.getException().getMessage());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.OnFail(e.getMessage());
+                    }
+                });
+    }
+
+    public void postToDbEventWorkshopDesc(Map<String, Object> map, String id, String type, DatabaseDataCallback callback){
+        String collection = "", subcollection = "";
+        if(type.equals("event")) {
+            collection = "events_short";
+            subcollection = "event_desc";
+        }
+        else if(type.equals("workshop")) {
+            collection = "workshops";
+            subcollection = "workshop_desc";
+        }
+        mDatabase.collection(collection)
+                .document(id)
+                .collection(subcollection)
+                .document("0")
+                .set(map)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        List<String> response = new ArrayList<>();
+                        response.add("Success");
+                        callback.OnSuccess(response);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

@@ -24,13 +24,35 @@
             android:id="@+id/nav_user"
             android:title="Użytkownik"
             android:icon="@drawable/ic_person"
+
             />
     </group>
-    <item android:title=""
-        />
+
+    <item android:title=""/>
+
     <item
-        android:id="@+id/nav_logout"
-        android:title="Wyloguj"
-        android:icon="@drawable/ic_logout"
-        />
+        android:title="Więcej">
+        <menu>
+            <item
+                android:id="@+id/nav_add_event"
+                android:title="Dodaj wydarzenie"
+                android:icon="@drawable/ic_event_add"
+                />
+            <item
+                android:id="@+id/nav_add_workshop"
+                android:title="Dodaj warsztat"
+                android:icon="@drawable/ic_workshop_add"
+                />
+        </menu>
+    </item>
+
+    <item
+        android:title="">
+        <menu>
+            <item
+            android:id="@+id/nav_logout"
+            android:title="Wyloguj"
+            android:icon="@drawable/ic_logout"/>
+        </menu>
+    </item>
 </menu>
