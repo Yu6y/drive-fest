@@ -206,10 +206,12 @@ public class WorkshopsFragment extends Fragment {
 
         return view;
     }
-    public void hideSearchView() {
+    public boolean hideSearchView() {
         if(searchView.getVisibility() == View.VISIBLE) {
             linearLayout.setVisibility(View.VISIBLE);
             searchView.setVisibility(View.GONE);
+            return true;
         }
+        return false;
     }
 }

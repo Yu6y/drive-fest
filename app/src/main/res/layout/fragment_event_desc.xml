@@ -121,7 +121,7 @@
                 android:orientation="horizontal"
                 android:paddingStart="7dp"
                 android:paddingEnd="7dp"
-                android:layout_weight="1">
+                >
 
                 <ImageView
                     android:id="@+id/eventDesc_usr_pic"
@@ -131,9 +131,10 @@
 
                 <EditText
                     android:id="@+id/commentEditText"
-                    android:layout_width="215dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Napisz komentarz..."/>
+                    android:hint="Napisz komentarz..."
+                    android:layout_weight="1"/>
 
                 <Button
                     android:id="@+id/commentBtn"

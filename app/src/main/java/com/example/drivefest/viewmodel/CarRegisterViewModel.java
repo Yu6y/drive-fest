@@ -11,10 +11,15 @@ import com.example.drivefest.data.repository.FirebaseAuthRepository;
 import com.example.drivefest.data.repository.FirebaseFirestoreRepository;
 import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CarRegisterViewModel extends ViewModel {
 
@@ -204,4 +209,84 @@ public class CarRegisterViewModel extends ViewModel {
             expensesListLiveData.postValue(currList);
         }
     }
+
+    public boolean checkIfExpensesExist(){
+        return expensesListLiveData.getValue() != null;
+    }
+   //zminaa
+    public List<String> getChartDates(){
+        List<Expense> list = expensesListLiveData.getValue();
+        if (list == null || list.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Sortowanie listy Expense na podstawie daty
+        list.sort(Comparator.comparing(Expense::getDate));
+
+        // Formatowanie daty do postaci MM-yyyy
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-yyyy");
+
+        // Mapowanie daty, usuwanie duplikatów i sortowanie uwzględniając rok
+        List<String> sortedDates = list.stream()
+                .map(expense -> expense.getDate().format(formatter))
+                .distinct()
+                .sorted((d1, d2) -> {
+                    DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("MM-yyyy");
+                    LocalDate date1 = LocalDate.parse("01-" + d1, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                    LocalDate date2 = LocalDate.parse("01-" + d2, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                    return date1.compareTo(date2);
+                })
+                .collect(Collectors.toList());
+
+        return sortedDates;
+    }
+
+    public List<Float> getChartAllValues(){
+
+        List<Expense> list = expensesListLiveData.getValue();
+        List<String> dates = getChartDates();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-yyyy");
+
+        Map<String, Float> pricesMap = new HashMap<>();
+
+        for (Expense expense : list) {
+            String monthKey = expense.getDate().format(formatter);
+            float currentSum = pricesMap.getOrDefault(monthKey, 0.0f);
+            pricesMap.put(monthKey, currentSum + expense.getPrice());
+        }
+
+        List<Float> prices = new ArrayList<>();
+        for(String date: dates){
+            prices.add(pricesMap.get(date));
+        }
+
+        return prices;
+    }
+
+    public List<Float> getFuelValues(){
+        List<Expense> list = expensesListLiveData.getValue();
+        List<String> dates = getChartDates();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-yyyy");
+
+        Map<String, Float> pricesMap = new HashMap<>();
+
+        for (Expense expense : list) {
+            if(expense.getType().equals("fuel")) {
+                String monthKey = expense.getDate().format(formatter);
+                float currentSum = pricesMap.getOrDefault(monthKey, 0.0f);
+                pricesMap.put(monthKey, currentSum + expense.getPrice());
+            }
+        }
+        List<Float> prices = new ArrayList<>();
+        for(String date: dates){
+            if(pricesMap.get(date) == null)
+                prices.add(0.0f);
+            else
+                prices.add(pricesMap.get(date));
+        }
+
+        return prices;
+    }
+
+
 }

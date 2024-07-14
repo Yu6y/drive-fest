@@ -84,8 +84,8 @@ public class AddExpenseFragment extends Fragment {
         carVM.getToastLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
                 carVM.fetchExpensesList();
+                Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
                 close();
             }
         });

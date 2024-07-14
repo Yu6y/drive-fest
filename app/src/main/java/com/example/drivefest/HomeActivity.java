@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.drivefest.data.model.Workshop;
 import com.example.drivefest.viewmodel.CarRegisterViewModel;
 import com.example.drivefest.viewmodel.HomeViewModel;
 
@@ -184,11 +185,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         int backStackEntryCount = fragmentManager.getBackStackEntryCount();
 
         if(drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START);
+        else if (currentFragment instanceof EventsFragment && ((EventsFragment) currentFragment).hideSearchView()) {
+            ;
+        }
+        else if (currentFragment instanceof WorkshopsFragment && ((WorkshopsFragment) currentFragment).hideSearchView()) {
+            ;
+        }
         else if (backStackEntryCount > 1)
             fragmentManager.popBackStack();
         else if (backStackEntryCount == 1)

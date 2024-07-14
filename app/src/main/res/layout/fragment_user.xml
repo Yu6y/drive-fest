@@ -206,7 +206,7 @@
         >
 
         <Button
-
+            android:id="@+id/show_chart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Wykres wydatkow??"

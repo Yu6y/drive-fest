@@ -37,7 +37,7 @@ import java.util.List;
 
 public class UserFragment extends Fragment {
 
-    private Button updateBtn, deleteBtn, addExpenseBtn;
+    private Button updateBtn, deleteBtn, addExpenseBtn, showChartBtn;
     private EditText insurance, tech, course, engineOil, transmisisonOil;
     private CarRegisterViewModel carVM;
     private RecyclerView recyclerView;
@@ -49,6 +49,7 @@ public class UserFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_user, container, false);
         carVM = new ViewModelProvider(requireActivity()).get(CarRegisterViewModel.class);
         carVM.fetchCarRegister();
+        carVM.fetchExpensesList();
 
         insurance = view.findViewById(R.id.register_insurance);
         tech = view.findViewById(R.id.register_tech);
@@ -59,6 +60,7 @@ public class UserFragment extends Fragment {
         deleteBtn = view.findViewById(R.id.register_delete);
         addExpenseBtn = view.findViewById(R.id.add_expense_button);
         recyclerView = view.findViewById(R.id.expenses_list);
+        showChartBtn = view.findViewById(R.id.show_chart);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
@@ -87,12 +89,13 @@ public class UserFragment extends Fragment {
             }
         });
         recyclerView.setAdapter(expenseListAdapter);
-        carVM.fetchExpensesList();
+
 
         carVM.getExpensesListLiveData().observe(getViewLifecycleOwner(), new Observer<List<Expense>>() {
             @Override
             public void onChanged(List<Expense> expenses) {
                 expenseListAdapter.updateData(expenses);
+                //recyclerView.scrollToPosition(0);
             }
         });
         updateBtn.setOnClickListener(v -> {
@@ -175,6 +178,20 @@ public class UserFragment extends Fragment {
                     Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
                 }
             }
+        });
+
+        showChartBtn.setOnClickListener(v ->{
+            if(carVM.checkIfExpensesExist()){
+                Fragment currFragment = getParentFragmentManager().findFragmentByTag("userFragment");
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.container, new ChartFragment(), "chartFragment")
+                        .hide(currFragment)
+                        .addToBackStack("chart")
+                        .commit();
+            }
+            else
+                Toast.makeText(getContext(), "Brak wydatków!", Toast.LENGTH_SHORT).show();
         });
         //list.setposition(0) na observe list
 
