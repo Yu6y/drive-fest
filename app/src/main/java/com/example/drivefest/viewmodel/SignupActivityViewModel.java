@@ -19,6 +19,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class SignupActivityViewModel extends ViewModel {
@@ -148,6 +149,12 @@ public void updateUserProfile(String name, String url) {
         if(pass == null || pass.isEmpty() || pass.length() < 6)
             return false;
         return true;
+    }
+
+    public void updateUserInDb(){
+        Map<String, Object> map = new HashMap<>();
+        map.put("null", "");
+        mDb.updateUser(mAuth.getCurrentUserId(), map);
     }
 }
 

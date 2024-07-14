@@ -924,9 +924,10 @@ public class HomeViewModel extends ViewModel {
             public void OnSuccess(List<?> response) {
                 Log.d("Success", "addeed event");
 
-                List<EventShort> currList = eventShortListLiveData.getValue();
+                /*List<EventShort> currList = eventShortListLiveData.getValue();
                 currList.add(0, eventShort);
-                eventShortListLiveData.postValue(currList);
+                eventShortListLiveData.postValue(currList);*/
+                fetchEventShortList();
 
                 addEventResponse.postValue("success");
             }
@@ -1048,11 +1049,12 @@ public class HomeViewModel extends ViewModel {
             public void OnSuccess(List<?> response) {
                 Log.d("Success", "addeed event");
 
-                List<Workshop> currList = workshopsLiveData.getValue();
+                /*List<Workshop> currList = workshopsLiveData.getValue();
                 if(currList != null) {
                     currList.add(0, workshop);
                     workshopsLiveData.postValue(currList);
-                }
+                }*/
+                fetchWorkshopsList();
                 addWorkshopResponse.postValue("success");
             }
 

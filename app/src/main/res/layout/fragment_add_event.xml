@@ -141,7 +141,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Choose picture"
+            android:text="Wybierz zdjęcie"
+            android:padding="5dp"
             android:textStyle="italic"
             android:background="@drawable/custom_button"
             />

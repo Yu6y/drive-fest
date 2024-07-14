@@ -82,7 +82,7 @@ public class SignupActivity extends AppCompatActivity {
                             public void onChanged(HashMap<String, String> stringStringHashMap) {
                                 Log.e("name",stringStringHashMap.get("name") );
                                 mSignupVM.updateUserProfile(stringStringHashMap.get("name"), stringStringHashMap.get("uri"));
-
+                                mSignupVM.updateUserInDb();
                             }
                         });
                         startActivity(intent);

@@ -25,10 +25,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.drivefest.viewmodel.CarRegisterViewModel;
 import com.example.drivefest.viewmodel.HomeViewModel;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,8 +44,8 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private HomeViewModel homeVM;
+    private CarRegisterViewModel carVM;
     private DrawerLayout drawerLayout;
-
     private HashMap<String, List<String>> checkedItems;
     private String startDate, endDate, sortBy;
     private ActivityResultLauncher<Intent> filterActivityResultLauncher;
@@ -51,8 +53,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle toggle;
     private Toolbar toolbar;
     private NavigationView navigationView;
-    private boolean mToolBarNavigationListenerIsRegistered = false;
-    // creating constant keys for shared preferences.
     private final String SHARED_PREFS = "shared_prefs";
 
     @Override
@@ -90,6 +90,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         homeVM = new ViewModelProvider(this).get(HomeViewModel.class);
+        carVM = new ViewModelProvider(this).get(CarRegisterViewModel.class);
         homeVM.fetchEventShortList();
         homeVM.fetchFavEventShortList();
 
@@ -107,9 +108,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        if(menuItem.getItemId() == R.id.nav_events)
-            ;
-        if(R.id.nav_followed == menuItem.getItemId()) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.container);
+
+        if(R.id.nav_events == menuItem.getItemId()) {
+            if (currentFragment != null && currentFragment.getTag() != null && currentFragment.getTag().equals("eventsFragment")) {
+                // eventsFragment już jest widoczny, nic nie rób
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return false;
+            } else {
+                // Ukryj aktualny fragment i usuń go ze stosu
+                if (currentFragment != null) {
+                    fragmentManager.beginTransaction()
+                            .hide(currentFragment)
+                            .commit();
+                    fragmentManager.popBackStack();
+                }
+
+            }
+        }
+        else if(R.id.nav_followed == menuItem.getItemId()) {
             homeVM.fetchFavEventShortList();
             //sprawdzic czy jest na stacku jesli tak to wyjebac i odpalic
             //onback ogarnac
@@ -126,6 +144,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .beginTransaction()
                     .replace(R.id.container, new WorkshopsFragment(), "workshopsFragment")
                     .addToBackStack("workshops")
+                    .commit();
+        }
+        else if(R.id.nav_user == menuItem.getItemId()){
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, new UserFragment(), "userFragment")
+                    .addToBackStack("register")
                     .commit();
         }
         else if(R.id.nav_add_event == menuItem.getItemId()) {
@@ -154,31 +179,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             finish();
         }
         drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-        //STATE_CHECKED ????
+        return false;
     }
 
     @Override
     public void onBackPressed() {
-        //przy add fragment ise zapamietuje a przy replace jest niszczony
-        //zrobic sprawdzenie fragmentu
-        //nie dzilaa w searchview przez hide w sort
-/*
-        Fragment fragment = getSupportFragmentManager()
-                .findFragmentById(R.id.container);
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0)
-            getSupportFragmentManager().popBackStack();
-        else if (fragment != null) {
-            if (fragment instanceof EventsFragment) {
-                EventsFragment fr = (EventsFragment) fragment;
-                fr.hideSearchView();
-                return;
-            } else*/
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+
+        if(drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
+        else if (backStackEntryCount > 1)
+            fragmentManager.popBackStack();
+        else if (backStackEntryCount == 1)
+            ;
+        else
             super.onBackPressed();
-        }
+
     }
     public void setupDrawerToggle(boolean val) {
         toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar, R.string.open,

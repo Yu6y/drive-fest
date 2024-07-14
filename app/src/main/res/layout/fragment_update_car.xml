@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UpdateCarFragment"
+    android:padding="2dp"
+    >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data końca ubezpieczenia"
+                android:textSize="16sp"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/update_insurance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="__-__-__"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data końca przeglądu technicznego"
+                android:textSize="16sp"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/update_tech"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="__.__.__"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Aktualny przebieg"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/udpate_course"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="____ km"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stan licznika do wymiany oleju silnikowego"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/update_engine_oil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="____ km"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:singleLine="true"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stan licznika do wymiany oleju w skrzyni biegów"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/update_transmission_oil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="____ km"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:singleLine="true"
+                />
+        </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="47dp"
+        android:layout_gravity="bottom"
+        >
+
+        <Button
+            android:id="@+id/update_data_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Zaaktualizuj"
+            android:background="@drawable/button_pressed"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

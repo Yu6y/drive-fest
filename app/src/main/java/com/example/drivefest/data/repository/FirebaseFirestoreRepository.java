@@ -1,11 +1,13 @@
 package com.example.drivefest.data.repository;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.drivefest.data.model.Comment;
 import com.example.drivefest.data.model.EventShort;
+import com.example.drivefest.data.model.Expense;
 import com.example.drivefest.data.model.RatedWorkshop;
 import com.example.drivefest.data.model.Workshop;
 import com.example.drivefest.data.repository.callback.DatabaseDataCallback;
@@ -13,6 +15,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -438,4 +441,240 @@ public class FirebaseFirestoreRepository {
                 });
     }
 
+    public void updateUser(String id, Map<String, Object> map){
+        mDatabase.collection("users")
+                .document(id)
+                .set(map)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("FirebaseAuth", "Success");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("FirebaseAuth", "Fail");
+                    }
+                });
+    }
+
+    public void getCarRegister(String id, DatabaseDataCallback callback){
+        mDatabase
+                .collection("users")
+                .document(id)
+                .collection("register")
+                .document("0")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Map<String, Object> doc = document.getData();
+                                Log.d("data", doc.toString());
+                                List<Map<?, ?>> response = new ArrayList<>();
+                                response.add(doc);
+                                callback.OnSuccess(response);
+                            } else {
+                                Log.d("data", "Document does not exist");
+                                callback.OnSuccess(null);
+                            }
+                        } else {
+                            Log.e("CarRegister", "Error getting documents: ", task.getException());
+                            callback.OnFail("Wystąpił błąd podczas odczytu danych!");
+                        }
+                    }
+                });
+    }
+
+    public void updateRegisterTechData(Map<String, Object> map, String id, DatabaseDataCallback callback){
+        mDatabase
+                .collection("users")
+                .document(id)
+                .collection("register")
+                .document("0")
+                .set(map)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firestore", "Dokument został pomyślnie zaktualizowany!");
+                        List<String> response = new ArrayList<>();
+                        response.add("success");
+                        callback.OnSuccess(response);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Firestore", "Wystąpił błąd podczas aktualizacji dokumentu: ", e);
+                        callback.OnFail("fail");
+                    }
+                });
+
+    }
+
+    public void deleteRegister(String id){
+        mDatabase
+                .collection("users")
+                .document(id)
+                .collection("register")
+                .document("0")
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d("Firestore", "Success delete");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Firestore", "Fail");
+                    }
+                });
+    }
+
+    public void addExpense(Map<String, Object> map, String id, DatabaseDataCallback callback) {
+        mDatabase
+                .collection("users")
+                .document(id)
+                .collection("expenses")
+                .add(map)
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        if (task.isSuccessful()) {
+                            DocumentReference documentReference = task.getResult();
+                            if (documentReference != null) {
+                                String documentId = documentReference.getId();
+                                Log.d("DocumentSnapshot added with ID: ", documentId);
+                                List<String> response = new ArrayList<>();
+                                response.add(documentReference.getId());
+                                callback.OnSuccess(response);
+                            }
+                        } else {
+                            Log.w("Error adding document", task.getException());
+                            callback.OnFail(task.getException().getMessage());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Firestore", "Wystąpił błąd podczas aktualizacji dokumentu: ", e);
+                        callback.OnFail("fail");
+                    }
+                });
+    }
+
+    public void getExpensesList(String id, DatabaseDataCallback callback){
+        mDatabase
+                .collection("users")
+                .document(id)
+                .collection("expenses")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<Expense> expenseList = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Expense expense = new Expense();
+                                expense.setData(document.getData(), document.getId());
+                                expenseList.add(expense);
+                                Log.d("success", document.getData().toString());
+
+                            }
+                            callback.OnSuccess(expenseList);
+                        } else {
+                            Log.d("fail", task.getException().toString());
+                            callback.OnFail(task.getException().getMessage());
+                        }
+                    }
+                });
+    }
+
+    public void deleteExpenses(String id, DatabaseDataCallback callback){
+        CollectionReference collectionRef =  mDatabase
+                .collection("users")
+                .document(id)
+                .collection("expenses");
+
+        collectionRef
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot querySnapshot = task.getResult();
+                            if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                                for (QueryDocumentSnapshot document : querySnapshot) {
+                                    collectionRef.document(document.getId()).delete()
+                                            .addOnSuccessListener(aVoid -> {
+                                                Log.d("Firestore", "Success");
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                callback.OnFail("Fail");
+                                            });
+                                }
+                                List<String> response = new ArrayList<>();
+                                response.add("Dane zostały usunięte!");
+                                callback.OnSuccess(response);
+                            } else {
+                                callback.OnFail("Collection is Empty!");
+                            }
+                        } else {
+                            callback.OnFail("Download data failed");
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Firestore", "fail");
+                        callback.OnFail(e.getMessage());
+                    }
+                });
+    }
+
+    public void updateExpense(String userId, Map<String, Object> map, String id, DatabaseDataCallback callback){
+        mDatabase
+                .collection("users")
+                .document(userId)
+                .collection("expenses")
+                .document(id)
+                .set(map)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("Firestore", "Update success");
+                        List<String> response = new ArrayList<>();
+                        response.add("Dane zapisano pomyślnie!");
+                        callback.OnSuccess(response);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override public void onFailure(@NonNull Exception e) {
+                        Log.d("Firestore", "Update failed");
+                        callback.OnFail("Bład w zapisie danych!");
+                    }
+                });
+    }
+
+    public void deleteExpense(String id, String userId){
+        mDatabase
+                .collection("users")
+                .document(userId)
+                .collection("expenses")
+                .document(id)
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d("Firestore", "Success delete");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Firestore", "Delete failed");
+                    }
+                });
+    }
 }

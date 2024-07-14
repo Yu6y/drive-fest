@@ -158,7 +158,7 @@ public class AddEventFragment extends Fragment {
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
-
+            date.setError(null);
             DatePickerDialog datePicker = new DatePickerDialog(getContext(),
                     new DatePickerDialog.OnDateSetListener() {
                         @Override

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+            <Button
+                android:id="@+id/register_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Zaaktualizuj Dane"
+                android:layout_gravity="start"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:background="@drawable/custom_button"
+                />
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    />
+                <Button
+                    android:id="@+id/register_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Usuń Dane"
+                    android:layout_gravity="start"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="5dp"
+                    android:padding="5dp"
+                    android:background="@drawable/custom_button_red"
+                    />
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data końca ubezpieczenia"
+                android:textSize="16sp"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/register_insurance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="__-__-__"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:focusable="false"
+                android:clickable="false"
+                android:inputType="none"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data końca przeglądu technicznego"
+                android:textSize="16sp"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/register_tech"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="__.__.__"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Aktualny przebieg"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/register_course"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="____ km"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:focusable="false"
+                android:clickable="false"
+                android:inputType="none"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stan licznika do wymiany oleju silnikowego"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/register_engine_oil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="____ km"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:focusable="false"
+                android:clickable="false"
+                android:inputType="none"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stan licznika do wymiany oleju w skrzyni biegów"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:layout_marginTop="7dp" />
+
+            <EditText
+                android:id="@+id/register_transmission_oil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="____ km"
+                android:background="@drawable/custom_button"
+                android:padding="10dp"
+                android:focusable="false"
+                android:clickable="false"
+                android:inputType="none"
+                />
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                >
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wydatki:"
+                android:textSize="18sp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                />
+                </LinearLayout>
+                <Button
+                    android:id="@+id/add_expense_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dodaj wydatek"
+                    android:padding="5dp"
+                    android:layout_weight="0"
+                    android:layout_marginTop="7dp"
+                    android:background="@drawable/custom_button"
+                    android:gravity="center_vertical"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/expenses_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:paddingBottom="90dp"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Add button fixed at the bottom -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="47dp"
+        android:layout_gravity="bottom"
+        android:padding="2dp"
+        >
+
+        <Button
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wykres wydatkow??"
+            android:background="@drawable/button_pressed"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+<!-- dodacpadding2dp-->
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

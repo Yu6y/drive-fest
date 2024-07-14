@@ -22,7 +22,7 @@
             />
         <item
             android:id="@+id/nav_user"
-            android:title="Użytkownik"
+            android:title="Dzienniczek Pojazdu"
             android:icon="@drawable/ic_person"
 
             />

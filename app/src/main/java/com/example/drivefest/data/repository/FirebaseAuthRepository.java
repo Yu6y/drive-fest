@@ -66,6 +66,7 @@ public class FirebaseAuthRepository {
                         response.add(new HashMap<Integer, String>(){
                             {
                                 put(0, "Success login.");
+                                put(-1, getCurrentUser().getUid());
                             }});
                         callback.OnSuccess(response);
                     }

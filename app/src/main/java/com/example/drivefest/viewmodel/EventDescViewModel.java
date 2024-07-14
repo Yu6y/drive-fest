@@ -69,7 +69,7 @@ public class EventDescViewModel extends ViewModel {
 
     public void postComment(Comment comment){
         Map<String, Object> map = new HashMap<>();
-        map.put("content", comment.getContent());
+        map.put("content", comment.getContent().trim());
         map.put("image", comment.getImage());
         map.put("timestamp", comment.getTimestamp());
         map.put("userId", comment.getUserId());
